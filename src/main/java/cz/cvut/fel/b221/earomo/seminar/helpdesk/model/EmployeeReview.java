@@ -15,10 +15,7 @@ public class EmployeeReview {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long employeeReviewId;
 
-    @OneToOne
-    private EmployeeUser employee;
-
-    @OneToOne
+    @ManyToOne
     private CustomerUser customer;
 
     @OneToOne

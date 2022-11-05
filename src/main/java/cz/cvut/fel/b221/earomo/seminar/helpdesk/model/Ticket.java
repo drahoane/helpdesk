@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,7 +18,7 @@ public class Ticket {
     private CustomerUser owner;
 
     @ManyToMany
-    private Set<EmployeeUser> assignedEmployees;
+    private List<EmployeeUser> assignedEmployees;
 
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
@@ -27,5 +27,11 @@ public class Ticket {
     private TicketPriority priority;
 
     @OneToMany(mappedBy = "ticket")
-    private Set<TicketMessage> messages;
+    private List<TicketMessage> messages;
+
+    @OneToOne
+    private EmployeeReview review;
+
+    @OneToMany(mappedBy = "ticket")
+    private List<TimeRecord> timeRecords;
 }

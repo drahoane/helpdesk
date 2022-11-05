@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,6 +29,9 @@ public abstract class User {
 
     private boolean accountDisabled = false;
 
+    @OneToMany(mappedBy = "sender")
+    private List<TicketMessage> ticketMessages;
+
     public boolean validatePassword(String password) {
         // TODO: Implement me
 
@@ -42,7 +46,7 @@ public abstract class User {
         if(this instanceof CustomerUser)
             return UserType.CUSTOMER;
 
-        if(this instanceof ManagerUser)
+        if(this instanceof ManagerUser) // This has to be before EMPLOYEE because of inheritance
             return UserType.MANAGER;
 
         if(this instanceof EmployeeUser)
