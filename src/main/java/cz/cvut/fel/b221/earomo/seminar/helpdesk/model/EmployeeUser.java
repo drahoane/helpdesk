@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,5 +20,5 @@ public class EmployeeUser extends User {
 
     // FIXME
     @ManyToMany
-    private List<Ticket> assignedTickets;
+    private Set<Ticket> assignedTickets;
 }

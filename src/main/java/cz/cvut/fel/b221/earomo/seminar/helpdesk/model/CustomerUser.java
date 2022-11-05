@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,8 +19,8 @@ public class CustomerUser extends User {
     private User user;
 
     @OneToMany(mappedBy = "owner")
-    private List<Ticket> tickets;
+    private Set<Ticket> tickets;
 
     @OneToMany(mappedBy = "customer")
-    private List<EmployeeReview> reviews;
+    private Set<EmployeeReview> reviews;
 }

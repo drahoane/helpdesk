@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,7 +31,7 @@ public abstract class User {
     private boolean accountDisabled = false;
 
     @OneToMany(mappedBy = "sender")
-    private List<TicketMessage> ticketMessages;
+    private Set<TicketMessage> ticketMessages;
 
     public boolean validatePassword(String password) {
         // TODO: Implement me
