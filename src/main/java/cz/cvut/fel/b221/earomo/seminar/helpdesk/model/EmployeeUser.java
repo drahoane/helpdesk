@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class EmployeeUser extends User {
-    @Id
+    @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long employeeId;
 

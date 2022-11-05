@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class CustomerUser extends User {
-    @Id
+    @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long customerId;
 

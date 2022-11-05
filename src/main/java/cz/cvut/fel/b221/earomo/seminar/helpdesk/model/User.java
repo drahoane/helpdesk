@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "\"user\"")
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -41,11 +42,11 @@ public abstract class User {
         if(this instanceof CustomerUser)
             return UserType.CUSTOMER;
 
-        if(this instanceof EmployeeUser)
-            return UserType.EMPLOYEE;
-
         if(this instanceof ManagerUser)
             return UserType.MANAGER;
+
+        if(this instanceof EmployeeUser)
+            return UserType.EMPLOYEE;
 
         throw new RuntimeException("Could not determine user type.");
     }

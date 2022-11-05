@@ -14,8 +14,10 @@ public class TimeRecord {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long timeRecordId;
 
+    @Column(name = "\"start\"")
     private LocalDateTime start;
 
+    @Column(name = "\"end\"")
     private LocalDateTime end;
 
     @ManyToOne
