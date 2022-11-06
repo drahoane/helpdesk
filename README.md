@@ -1,4 +1,5 @@
 # HELPDESK
+autoři semestrální práce: Adam Roth, Aneta Drahoňovská 
 
 ## Bližší popis
 Vytvoření zákaznického servisu, který svým uživatelům poskytne prostor pro přímou komunikaci se členy podpory. Zákazníci tak mohou podávat veškeré dotazy, návrhy a další náměty prostřednictvím ticketů na jednom přehledném místě a to s minimální reakční dobou zaměstnanců, která je uzpůsobena mimo jiné díky možnosti určení úrovně závažnosti (kompetence vedoucího společnosti) a typu zákaznického podnětu. Dále mohou uživatelé reagovat prostřednictvím komentářů na odpovědi zaměstnanců podpory. Vedoucí přiděluje své pracovníky k jednotlivým ticketům a také určuje termíny do jejich nutného splnění. Zaměstnanci mají možnost sledovat výši času stráveného nad daným problémem a jsou nuceni informovat zákazníka o postupu řešení. Jestliže zákazník projeví svou spokojenost s takovýmto řešením zaměstnance, vedoucí tuto záležitost uzavře. 
