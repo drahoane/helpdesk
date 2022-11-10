@@ -5,14 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "\"user\"")
+@Table(name = "\"USER\"")
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

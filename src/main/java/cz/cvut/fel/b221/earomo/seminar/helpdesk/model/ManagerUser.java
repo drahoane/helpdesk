@@ -9,10 +9,4 @@ import javax.persistence.*;
 @Getter
 @Setter
 public class ManagerUser extends EmployeeUser {
-    @Column(unique = true)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long managerId;
-
-    @OneToOne
-    private User user;
 }

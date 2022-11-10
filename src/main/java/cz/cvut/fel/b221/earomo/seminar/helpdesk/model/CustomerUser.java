@@ -11,13 +11,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class CustomerUser extends User {
-    @Column(unique = true)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long customerId;
-
-    @OneToOne
-    private User user;
-
     @OneToMany(mappedBy = "owner")
     private Set<Ticket> tickets;
 

@@ -18,16 +18,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class HelpDeskApplicationTests {
 
 	private final EmployeeUserRepository employeeUserRepository;
-	private final UserFactory userFactory;
 
 	@Autowired
-	HelpDeskApplicationTests(EmployeeUserRepository employeeUserRepository, UserFactory userFactory) {
+	HelpDeskApplicationTests(EmployeeUserRepository employeeUserRepository) {
 		this.employeeUserRepository = employeeUserRepository;
-		this.userFactory = userFactory;
 	}
 
 	@Test
 	void userCreationTest() {
+		UserFactory userFactory = new UserFactory();
 		EmployeeUser employeeUser = (EmployeeUser) userFactory.createUser("Arnold", "Černášunka", "arnold@sunka.cz", "test", UserType.EMPLOYEE);
 		employeeUserRepository.save(employeeUser);
 

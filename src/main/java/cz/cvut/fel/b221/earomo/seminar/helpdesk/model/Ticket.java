@@ -20,7 +20,7 @@ public class Ticket {
     @ManyToOne
     private CustomerUser owner;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "assignedTickets")
     private Set<EmployeeUser> assignedEmployees;
 
     @Enumerated(EnumType.STRING)
@@ -28,6 +28,9 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     private TicketPriority priority;
+
+    @Column(nullable = false)
+    private String title;
 
     @OneToMany(mappedBy = "ticket")
     private Set<TicketMessage> messages;

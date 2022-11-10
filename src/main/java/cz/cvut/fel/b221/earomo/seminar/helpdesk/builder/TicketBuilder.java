@@ -1,6 +1,7 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.builder;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ public class TicketBuilder {
     private Set<EmployeeUser> assignedEmployees;
     private TicketStatus status;
     private TicketPriority priority;
+    private String title;
     private Set<TicketMessage> ticketMessages;
 
     private Set<TimeRecord> timeRecords;
@@ -24,7 +26,7 @@ public class TicketBuilder {
         this.timeRecords = new HashSet<>();
     }
 
-    public TicketBuilder setOwner(CustomerUser owner) {
+    public TicketBuilder setOwner(@NotNull CustomerUser owner) {
         this.owner = owner;
 
         return this;
@@ -33,7 +35,7 @@ public class TicketBuilder {
     /**
      * Default value: OPEN
      */
-    public TicketBuilder setStatus(TicketStatus status) {
+    public TicketBuilder setStatus(@NotNull TicketStatus status) {
         this.status = status;
 
         return this;
@@ -42,37 +44,43 @@ public class TicketBuilder {
     /**
      * Default value: MEDIUM
      */
-    public TicketBuilder setPriority(TicketPriority priority) {
+    public TicketBuilder setPriority(@NotNull TicketPriority priority) {
         this.priority = priority;
 
         return this;
     }
 
-    public TicketBuilder assignEmployee(EmployeeUser employee) {
+    public TicketBuilder setTitle(@NotNull String title) {
+        this.title = title;
+
+        return this;
+    }
+
+    public TicketBuilder assignEmployee(@NotNull EmployeeUser employee) {
         assignedEmployees.add(employee);
 
         return this;
     }
 
-    public TicketBuilder addMessage(TicketMessage message) {
+    public TicketBuilder addMessage(@NotNull TicketMessage message) {
         ticketMessages.add(message);
 
         return this;
     }
 
-    public TicketBuilder addMessages(Set<TicketMessage> messages) {
+    public TicketBuilder addMessages(@NotNull Set<TicketMessage> messages) {
         ticketMessages.addAll(messages);
 
         return this;
     }
 
-    public TicketBuilder addTimeRecord(TimeRecord timeRecord) {
+    public TicketBuilder addTimeRecord(@NotNull TimeRecord timeRecord) {
         timeRecords.add(timeRecord);
 
         return this;
     }
 
-    public TicketBuilder addTimeRecords(Set<TimeRecord> timeRecords) {
+    public TicketBuilder addTimeRecords(@NotNull Set<TimeRecord> timeRecords) {
         timeRecords.addAll(timeRecords);
 
         return this;
@@ -82,10 +90,14 @@ public class TicketBuilder {
         if(owner == null)
             throw new NullPointerException("Ticket owner can not be null.");
 
+        if(title == null)
+            throw new NullPointerException("Ticket title can not be null.");
+
         Ticket ticket = new Ticket();
         ticket.setOwner(owner);
         ticket.setStatus(status);
         ticket.setPriority(priority);
+        ticket.setTitle(title);
         ticket.setAssignedEmployees(assignedEmployees);
         ticket.setMessages(ticketMessages);
         ticket.setTimeRecords(timeRecords);

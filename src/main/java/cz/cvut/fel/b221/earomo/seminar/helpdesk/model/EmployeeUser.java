@@ -11,14 +11,11 @@ import java.util.Set;
 @Getter
 @Setter
 public class EmployeeUser extends User {
-    @Column(unique = true)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long employeeId;
-
-    @OneToOne
-    private User user;
-
-    // FIXME
     @ManyToMany
+    @JoinTable(
+            name = "employee_user_ticket",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "ticket_id")
+    )
     private Set<Ticket> assignedTickets;
 }
