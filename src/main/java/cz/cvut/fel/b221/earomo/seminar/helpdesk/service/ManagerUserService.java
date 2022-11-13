@@ -16,10 +16,10 @@ public class ManagerUserService {
         this.managerUserRepository = managerUserRepository;
     }
 
-    public ManagerUser create(String firstName, String lastName, String email, String password, UserType userType) {
+    public ManagerUser create(String firstName, String lastName, String email, String password) {
         UserFactory userFactory = new UserFactory();
 
-        ManagerUser managerUser = (ManagerUser)userFactory.createUser(firstName, lastName, email, password, userType);
+        ManagerUser managerUser = (ManagerUser)userFactory.createUser(firstName, lastName, email, password, UserType.MANAGER);
         managerUserRepository.save(managerUser);
 
         return managerUser;

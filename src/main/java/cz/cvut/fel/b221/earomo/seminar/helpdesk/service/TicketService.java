@@ -12,22 +12,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class TicketService {
     private final TicketRepository ticketRepository;
+    private final TicketFactory ticketFactory;
 
     @Autowired
-    public TicketService(TicketRepository ticketRepository) {
+    public TicketService(TicketRepository ticketRepository, TicketFactory ticketFactory) {
         this.ticketRepository = ticketRepository;
+        this.ticketFactory = ticketFactory;
     }
 
-    public Ticket create(CustomerUser customerUser, String title, String message) {
-        TicketFactory ticketFactory = new TicketFactory();
-
+    public Ticket create(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message) {
         Ticket ticket = ticketFactory.createTicket(customerUser, title, message);
         ticketRepository.save(ticket);
 
@@ -39,7 +38,7 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Ticket> find(Long id) {
+    public Optional<Ticket> find(@NotNull Long id) {
         return ticketRepository.findById(id);
     }
 
@@ -56,6 +55,4 @@ public class TicketService {
         ticket.setPriority(priority);
         ticketRepository.save(ticket);
     }
-
-
 }

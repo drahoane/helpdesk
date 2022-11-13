@@ -7,6 +7,8 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepositor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 public class EmployeeUserService {
     private final EmployeeUserRepository employeeUserRepository;
@@ -16,12 +18,16 @@ public class EmployeeUserService {
         this.employeeUserRepository = employeeUserRepository;
     }
 
-    public EmployeeUser create(String firstName, String lastName, String email, String password, UserType userType) {
+    public EmployeeUser create(String firstName, String lastName, String email, String password) {
         UserFactory userFactory = new UserFactory();
 
-        EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser(firstName, lastName, email, password, userType);
+        EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);
         employeeUserRepository.save(employeeUser);
 
         return employeeUser;
+    }
+
+    public Set<EmployeeUser> getAllUnassignedEmployees() {
+        return employeeUserRepository.getAllUnassignedEmployees();
     }
 }

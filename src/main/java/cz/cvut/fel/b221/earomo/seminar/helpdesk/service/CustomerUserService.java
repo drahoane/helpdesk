@@ -16,10 +16,10 @@ public class CustomerUserService {
         this.customerUserRepository = customerUserRepository;
     }
 
-    public CustomerUser create(String firstName, String lastName, String email, String password, UserType userType) {
+    public CustomerUser create(String firstName, String lastName, String email, String password) {
         UserFactory userFactory = new UserFactory();
 
-        CustomerUser customerUser = (CustomerUser)userFactory.createUser(firstName, lastName, email, password, userType);
+        CustomerUser customerUser = (CustomerUser)userFactory.createUser(firstName, lastName, email, password, UserType.CUSTOMER);
         customerUserRepository.save(customerUser);
 
         return customerUser;
