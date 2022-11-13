@@ -29,6 +29,9 @@ Náš projekt je určen především uživatelům jakožto zákaznický servis, 
 - Uzavření jakéhokoli ticketu
 - Přiřazení pracovníka podpory k danému ticketu
 
+## Co systém neposkytuje 
+- integraci s ostatními systémy
+
 ## Class diagram
 https://lucid.app/lucidchart/a348015f-68bb-4a36-a0b8-2cf51f78b49b/edit?viewport_loc=59%2C-329%2C3096%2C1783%2C0_0&invitationId=inv_33fbe9d9-8b39-476a-9dab-f0c75286a64a
 
