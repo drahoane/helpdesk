@@ -20,7 +20,7 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    @GetMapping("index")
+    @GetMapping
     public Set<TicketDTO> getAllTickets() {
         return ticketService.findAll().stream().map(TicketDTO::fromEntity).collect(Collectors.toSet());
     }
