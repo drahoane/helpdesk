@@ -26,6 +26,7 @@ public class TicketService {
         this.ticketFactory = ticketFactory;
     }
 
+    @Transactional
     public Ticket create(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message) {
         Ticket ticket = ticketFactory.createTicket(customerUser, title, message);
         ticketRepository.save(ticket);
@@ -33,6 +34,7 @@ public class TicketService {
         return ticket;
     }
 
+    @Transactional(readOnly = true)
     public Set<Ticket> findAll() {
         return new HashSet<>(ticketRepository.findAll());
     }

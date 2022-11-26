@@ -3,9 +3,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.builder;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class TicketBuilder {

@@ -21,17 +21,11 @@ public class EmployeeReview {
     @OneToOne
     private Ticket ticket;
 
-    private Integer grade;
+    @Enumerated(EnumType.STRING)
+    private String grade;
     
     private String textReview;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    public void setGrade(int grade) {
-        if(grade < 0 || grade > 5)
-            throw new IllegalArgumentException("Grade can only be in rage 0-5.");
-
-        this.grade = grade;
-    }
 }
