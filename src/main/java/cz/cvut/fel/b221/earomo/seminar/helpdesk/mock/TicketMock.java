@@ -9,6 +9,8 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Component
 public class TicketMock {
     private final CustomerUserRepository customerUserRepository;
@@ -27,8 +29,17 @@ public class TicketMock {
     public void mock() {
         TicketBuilder tb = new TicketBuilder();
         TicketMessage tm = new TicketMessage();
-        Ticket t1 = tb.setTitle("Ticket1").addMessage(tm).setOwner(customerUserRepository.findById(1L).get()).assignEmployee(employeeUserRepository.findById(3L).get()).build();
-        Ticket t2 = tb.setTitle("Ticket2").addMessage(tm).setOwner(customerUserRepository.findById(2L).get()).assignEmployee(employeeUserRepository.findById(3L).get()).assignEmployee(managerUserRepository.findById(4L).get()).build();
+        Ticket t1 = tb.setTitle("Ticket1")
+                .addMessage(tm)
+                .setOwner(customerUserRepository.findById(1L).get())
+                .assignEmployee(employeeUserRepository.findById(3L).get())
+                .build();
+        Ticket t2 = tb.setTitle("Ticket2")
+                .addMessage(tm)
+                .setOwner(customerUserRepository.findById(2L).get())
+                .assignEmployee(employeeUserRepository.findById(3L).get())
+                .assignEmployee(managerUserRepository.findById(4L).get())
+                .build();
 
         ticketRepository.save(t1);
         ticketRepository.save(t2);

@@ -22,7 +22,7 @@ public class EmployeeReview {
     private Ticket ticket;
 
     @Enumerated(EnumType.STRING)
-    private String grade;
+    private EmployeeReviewGrade grade;
     
     private String textReview;
 
