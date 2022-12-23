@@ -1,5 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.UserTicketListDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
@@ -11,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketService {
@@ -35,8 +36,8 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public Set<Ticket> findAll() {
-        return new HashSet<>(ticketRepository.findAll());
+    public Set<UserTicketListDTO> findAll() {
+        return ticketRepository.findAll().stream().map(UserTicketListDTO::fromEntity).collect(Collectors.toSet());
     }
 
     @Transactional(readOnly = true)
@@ -56,5 +57,12 @@ public class TicketService {
         Ticket ticket = find(id).orElseThrow(IllegalArgumentException::new);
         ticket.setPriority(priority);
         ticketRepository.save(ticket);
+    }
+
+    @Transactional
+    public void delete(@NotNull Long id) {
+        Ticket ticket = find(id).orElseThrow(IllegalArgumentException::new);
+        ticketRepository.delete(ticket);
+        //persist
     }
 }
