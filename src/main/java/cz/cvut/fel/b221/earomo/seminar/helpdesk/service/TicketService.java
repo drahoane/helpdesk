@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,8 +37,8 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public Set<UserTicketListDTO> findAll() {
-        return ticketRepository.findAll().stream().map(UserTicketListDTO::fromEntity).collect(Collectors.toSet());
+    public Set<Ticket> findAll() {
+        return new HashSet<>(ticketRepository.findAll());
     }
 
     @Transactional(readOnly = true)

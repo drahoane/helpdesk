@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "\"USER\"")
+@Table(name = "users")
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,8 +23,7 @@ public abstract class User {
 
     private String email;
 
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.PACKAGE)
     private String password;
 
     private boolean accountDisabled = false;
@@ -32,26 +31,5 @@ public abstract class User {
     @OneToMany(mappedBy = "sender")
     private Set<TicketMessage> ticketMessages;
 
-    public boolean validatePassword(String password) {
-        // TODO: Implement me
-
-        return false;
-    }
-
-    public void setPassword(String password) {
-        // TODO: Implement me
-    }
-
-    public UserType getUserType() {
-        if(this instanceof CustomerUser)
-            return UserType.CUSTOMER;
-
-        if(this instanceof ManagerUser) // This has to be before EMPLOYEE because of inheritance
-            return UserType.MANAGER;
-
-        if(this instanceof EmployeeUser)
-            return UserType.EMPLOYEE;
-
-        throw new RuntimeException("Could not determine user type.");
-    }
+    public abstract UserType getUserType();
 }

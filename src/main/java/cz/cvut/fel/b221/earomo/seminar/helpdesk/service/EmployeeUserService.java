@@ -5,6 +5,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
+import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,17 +16,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class EmployeeUserService {
     private final EmployeeUserRepository employeeUserRepository;
-
-    @Autowired
-    public EmployeeUserService(EmployeeUserRepository employeeUserRepository) {
-        this.employeeUserRepository = employeeUserRepository;
-    }
+    private final UserFactory userFactory;
 
     public EmployeeUser create(String firstName, String lastName, String email, String password) {
-        UserFactory userFactory = new UserFactory();
-
         EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);
         employeeUserRepository.save(employeeUser);
 

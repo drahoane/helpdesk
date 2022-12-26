@@ -2,8 +2,12 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.TicketMock;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.UserMock;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.ManagerUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,13 +21,15 @@ class HelpDeskApplicationTests {
 	private final TicketMock ticketMock;
 	private final UserMock userMock;
 	private  final TicketRepository ticketRepository;
+	private final ManagerUserRepository managerUserRepository;
 
 	@Autowired
-	public HelpDeskApplicationTests(EmployeeUserRepository employeeUserRepository, TicketMock ticketMock, UserMock userMock, TicketRepository ticketRepository) {
+	public HelpDeskApplicationTests(EmployeeUserRepository employeeUserRepository, TicketMock ticketMock, UserMock userMock, TicketRepository ticketRepository, ManagerUserRepository managerUserRepository) {
 		this.employeeUserRepository = employeeUserRepository;
 		this.ticketMock = ticketMock;
 		this.userMock = userMock;
 		this.ticketRepository = ticketRepository;
+		this.managerUserRepository = managerUserRepository;
 	}
 
 	@Test
@@ -32,5 +38,8 @@ class HelpDeskApplicationTests {
 		ticketMock.mock();
 		assertTrue(employeeUserRepository.findAll().size() > 0);
 		assertTrue(ticketRepository.findAll().size() > 0);
+
+		User user = (User) managerUserRepository.findAll().get(0);
+		assertEquals(UserType.CUSTOMER, user.getUserType());
 	}
 }

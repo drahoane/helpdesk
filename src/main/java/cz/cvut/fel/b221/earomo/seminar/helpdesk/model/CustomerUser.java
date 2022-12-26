@@ -16,4 +16,10 @@ public class CustomerUser extends User {
 
     @OneToMany(mappedBy = "customer")
     private Set<EmployeeReview> reviews;
+
+
+    @Override
+    public UserType getUserType() {
+        return UserType.CUSTOMER;
+    }
 }

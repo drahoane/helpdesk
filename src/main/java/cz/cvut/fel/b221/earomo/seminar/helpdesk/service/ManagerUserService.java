@@ -3,6 +3,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.ManagerUserRepository;
+import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,17 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ManagerUserService {
     private final ManagerUserRepository managerUserRepository;
-
-    @Autowired
-    public ManagerUserService(ManagerUserRepository managerUserRepository) {
-        this.managerUserRepository = managerUserRepository;
-    }
+    private final UserFactory userFactory;
 
     public ManagerUser create(String firstName, String lastName, String email, String password) {
-        UserFactory userFactory = new UserFactory();
-
         ManagerUser managerUser = (ManagerUser)userFactory.createUser(firstName, lastName, email, password, UserType.MANAGER);
         managerUserRepository.save(managerUser);
 

@@ -18,4 +18,9 @@ public class EmployeeUser extends User {
             inverseJoinColumns = @JoinColumn(name = "ticket_id")
     )
     private Set<Ticket> assignedTickets;
+
+    @Override
+    public UserType getUserType() {
+        return UserType.EMPLOYEE;
+    }
 }
