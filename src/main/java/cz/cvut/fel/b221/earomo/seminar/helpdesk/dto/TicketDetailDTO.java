@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public record TicketDetailDTO(Long id, CustomerUserDTO owner, Set<EmployeeUserDTO> assignedEmployees, TicketStatus status,
-                              TicketPriority priority, Set<TicketMessageDTO> messages, EmployeeReviewListDTO review) {
+                              TicketPriority priority, Set<TicketMessageDTO> messages) {
     public static TicketDetailDTO fromEntity(Ticket entity) {
         return new TicketDetailDTO(
                 entity.getTicketId(),
@@ -16,8 +16,7 @@ public record TicketDetailDTO(Long id, CustomerUserDTO owner, Set<EmployeeUserDT
                 entity.getAssignedEmployees().stream().map(EmployeeUserDTO::fromEntity).collect(Collectors.toSet()),
                 entity.getStatus(),
                 entity.getPriority(),
-                entity.getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet()),
-                EmployeeReviewListDTO.fromEntity(entity.getReview())
+                entity.getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet())
         );
     }
 }

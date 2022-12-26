@@ -9,4 +9,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 public class ManagerUser extends EmployeeUser {
+    @Override
+    @SuppressWarnings("JpaAttributeMemberSignatureInspection")
+    public UserType getUserType() {
+        return UserType.MANAGER;
+    }
 }
