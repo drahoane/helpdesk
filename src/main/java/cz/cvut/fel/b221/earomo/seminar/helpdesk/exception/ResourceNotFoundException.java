@@ -1,5 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.exception;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -9,7 +10,11 @@ public class ResourceNotFoundException extends RuntimeException {
         super();
     }
 
-    public ResourceNotFoundException(String message) {
-        super(message);
+    public ResourceNotFoundException(@NotNull Class c, @NotNull Long id) {
+        super("Resource " + c.getSimpleName() + " #" + id + " not found.");
+    }
+
+    public ResourceNotFoundException(@NotNull Class c, @NotNull String identifiableBy, @NotNull String id) {
+        super("Resource " + c.getSimpleName() + " with " + identifiableBy + " " + id + " not found.");
     }
 }

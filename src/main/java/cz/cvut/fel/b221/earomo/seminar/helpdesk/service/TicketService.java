@@ -1,6 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.UserTicketListDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
@@ -10,6 +10,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,23 +56,22 @@ public class TicketService {
     }
 
     @Transactional
-    public void updateStatus(@NotNull Long id, @NotNull TicketStatus status) {
-        Ticket ticket = find(id).orElseThrow(ResourceNotFoundException::new);
-        ticket.setStatus(status);
-        ticketRepository.save(ticket);
-    }
+    public void update(@NotNull TicketUpdateDTO ticketUpdateDTO) {
+        Ticket ticket = find(ticketUpdateDTO.id()).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketUpdateDTO.id()));
+        if(ticketUpdateDTO.priority() != null)
+            ticket.setPriority(ticketUpdateDTO.priority());
 
-    @Transactional
-    public void updatePriority(@NotNull Long id, @NotNull TicketPriority priority) {
-        Ticket ticket = find(id).orElseThrow(ResourceNotFoundException::new);
-        ticket.setPriority(priority);
+        if(ticketUpdateDTO.status() != null) {
+            ticket.setStatus(ticketUpdateDTO.status());
+        }
+
         ticketRepository.save(ticket);
     }
 
     @Transactional
     public void delete(@NotNull Long id) {
         boolean exists = ticketRepository.existsById(id);
-        if(!exists) throw new ResourceNotFoundException("Ticket #" + id + " not found.");
+        if(!exists) throw new ResourceNotFoundException(Ticket.class, id);
 
         ticketRepository.deleteById(id);
     }

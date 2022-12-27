@@ -1,19 +1,23 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.CreateTicketDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketDetailDTO;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreFilter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TicketController {
     private final TicketService ticketService;
+    private final UserService userService;
 
     /**
      * Returns all tickets of signed-in customer or all tickets if signed-in user is EMPLOYEE or MANAGER.
