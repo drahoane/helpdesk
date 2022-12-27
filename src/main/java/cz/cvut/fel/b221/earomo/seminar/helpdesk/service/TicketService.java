@@ -31,8 +31,9 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket create(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message) {
-        Ticket ticket = ticketFactory.createTicket(customerUser, title, message);
+    public Ticket create(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message,
+                         @NotNull TicketPriority priority) {
+        Ticket ticket = ticketFactory.createTicket(customerUser, title, message, priority);
         ticketRepository.save(ticket);
 
         return ticket;

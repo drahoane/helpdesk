@@ -3,7 +3,9 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketDetailDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,5 +31,36 @@ public class TicketController {
     @GetMapping
     public Set<TicketDetailDTO> getAllTickets() {
         return ticketService.findAll().stream().map(TicketDetailDTO::fromEntity).collect(Collectors.toSet());
+    }
+
+    @GetMapping("/{id}")
+    @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.owner().email()")
+    public TicketDetailDTO getTicket(@PathVariable @NotNull Long id) {
+        return TicketDetailDTO.fromEntity(ticketService.find(id).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, id)));
+    }
+
+    /**
+     * Updates status and/or priority
+     * @param ticket
+     */
+
+    //TODO: Permissions
+    @PutMapping
+    public void updateTicket(@RequestBody TicketUpdateDTO ticket) {
+        ticketService.update(ticket);
+    }
+
+    @PostMapping
+    public TicketDetailDTO createTicket(Principal principal, @RequestBody @NotNull CreateTicketDTO ticket) {
+        CustomerUser customer = (CustomerUser) userService.findByEmail(principal.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(User.class, "email", principal.getName()));
+
+        return TicketDetailDTO.fromEntity(ticketService.create(customer, ticket.title(), ticket.message(), ticket.priority()));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public void deleteTicket(@PathVariable @NotNull Long id) {
+        ticketService.delete(id);
     }
 }

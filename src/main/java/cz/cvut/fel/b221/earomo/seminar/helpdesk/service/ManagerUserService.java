@@ -1,5 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.ManagerUserRepository;
@@ -50,8 +51,8 @@ public class ManagerUserService {
 
     @Transactional
     public void delete(@NotNull Long id) {
-        ManagerUser managerUser = find(id).orElseThrow(IllegalArgumentException::new);
-        managerUserRepository.delete(managerUser);
-        //persist
+        boolean exists = managerUserRepository.existsById(id);
+        if(!exists) throw new ResourceNotFoundException(Ticket.class, id);
+        managerUserRepository.deleteById(id);
     }
 }

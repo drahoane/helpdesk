@@ -19,7 +19,8 @@ public class TicketFactory {
     private final EmployeeUserService employeeUserService;
     private final TicketService ticketService;
 
-    public Ticket createTicket(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message) {
+    public Ticket createTicket(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message,
+                               @NotNull TicketPriority priority) {
         TicketBuilder ticketBuilder = new TicketBuilder();
         TicketMessage ticketMessage = new TicketMessage();
 
@@ -28,6 +29,7 @@ public class TicketFactory {
 
         ticketBuilder.setOwner(customerUser);
         ticketBuilder.setTitle(title);
+        ticketBuilder.setPriority(priority);
         ticketBuilder.addMessage(ticketMessage);
 
         Set<EmployeeUser> unassignedEmployees = employeeUserService.findAll();
