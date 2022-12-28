@@ -3,10 +3,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketPriority;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketStatus;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +71,12 @@ public class TicketService {
         if(!exists) throw new ResourceNotFoundException(Ticket.class, id);
 
         ticketRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void assignEmployee(@NotNull Ticket ticket, @NotNull EmployeeUser employee) {
+        ticket.getAssignedEmployees().add(employee);
+
+        ticketRepository.save(ticket);
     }
 }

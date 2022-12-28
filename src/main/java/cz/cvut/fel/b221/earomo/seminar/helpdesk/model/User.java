@@ -28,6 +28,9 @@ public abstract class User {
 
     private boolean accountDisabled = false;
 
+    @Transient
+    private UserType userType;
+
     @OneToMany(mappedBy = "sender")
     private Set<TicketMessage> ticketMessages;
 

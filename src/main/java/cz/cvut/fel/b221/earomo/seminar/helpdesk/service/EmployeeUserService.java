@@ -7,6 +7,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class EmployeeUserService {
     private final EmployeeUserRepository employeeUserRepository;
     private final UserFactory userFactory;
+    private final TicketRepository ticketRepository;
 
     public EmployeeUser create(String firstName, String lastName, String email, String password) {
         EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);
@@ -67,6 +69,17 @@ public class EmployeeUserService {
     }
 
     public Set<EmployeeUser> getAllUnassignedEmployees() {
-        return employeeUserRepository.getAllUnassignedEmployees();
+        Set<EmployeeUser> unassignedEmployees = new HashSet<>(employeeUserRepository.findAll());
+        Set<EmployeeUser> assignedEmployees = new HashSet<>();
+        Set<Ticket> unresolvedTickets = new HashSet<>();
+
+        unresolvedTickets.addAll(ticketRepository.findAllByStatus(TicketStatus.OPEN));
+        unresolvedTickets.addAll(ticketRepository.findAllByStatus(TicketStatus.AWAITING_RESPONSE));
+
+        unresolvedTickets.stream().forEach(ticket -> assignedEmployees.addAll(ticket.getAssignedEmployees()));
+
+        unassignedEmployees.removeAll(assignedEmployees);
+
+        return unassignedEmployees;
     }
 }

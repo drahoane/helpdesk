@@ -58,7 +58,7 @@ public class ManagerUserService {
     @Transactional
     public void delete(@NotNull Long id) {
         boolean exists = managerUserRepository.existsById(id);
-        if(!exists) throw new ResourceNotFoundException(Ticket.class, id);
+        if (!exists) throw new ResourceNotFoundException(Ticket.class, id);
         managerUserRepository.deleteById(id);
     }
 }

@@ -8,8 +8,4 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 
 @Repository
-public interface EmployeeUserRepository extends JpaRepository<EmployeeUser, Long> {
-    // FIXME
-    @Query("SELECT eu FROM EmployeeUser eu WHERE eu.assignedTickets.size = 0")
-    Set<EmployeeUser> getAllUnassignedEmployees();
-}
+public interface EmployeeUserRepository extends JpaRepository<EmployeeUser, Long> {}

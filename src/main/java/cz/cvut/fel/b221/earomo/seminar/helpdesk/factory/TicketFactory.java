@@ -4,14 +4,11 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.builder.TicketBuilder;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -20,7 +17,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class TicketFactory {
     private final EmployeeUserService employeeUserService;
-    private final TicketRepository ticketRepository;
 
     public Ticket createTicket(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message,
                                @NotNull TicketPriority priority) {
@@ -35,18 +31,9 @@ public class TicketFactory {
         ticketBuilder.setPriority(priority);
         ticketBuilder.addMessage(ticketMessage);
 
-        Set<EmployeeUser> unassignedEmployees = employeeUserService.findAll();
-        Set<EmployeeUser> assignedEmployees = new HashSet<>();
-        Set<Ticket> unresolvedTickets = new HashSet<>();
+        Set<EmployeeUser> unassignedEmployees = employeeUserService.getAllUnassignedEmployees();
 
-        unresolvedTickets.addAll(ticketRepository.findAllByStatus(TicketStatus.OPEN));
-        unresolvedTickets.addAll(ticketRepository.findAllByStatus(TicketStatus.AWAITING_RESPONSE));
-
-        unresolvedTickets.stream().forEach(ticket -> assignedEmployees.addAll(ticket.getAssignedEmployees()));
-
-        unassignedEmployees.removeAll(assignedEmployees);
-
-        if(unassignedEmployees.size() > 0) {
+        if(!unassignedEmployees.isEmpty()) {
             Random rand = new Random();
             int randElement = rand.nextInt(unassignedEmployees.size());
             int i = 0;
