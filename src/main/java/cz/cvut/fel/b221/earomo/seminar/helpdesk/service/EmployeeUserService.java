@@ -1,7 +1,10 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import lombok.AllArgsConstructor;
@@ -34,13 +37,13 @@ public class EmployeeUserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<EmployeeUser> find(@NotNull Long id) {
-        return employeeUserRepository.findById(id);
+    public EmployeeUser find(@NotNull Long id) {
+        return employeeUserRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EmployeeUser.class, id));
     }
 
     @Transactional
     public void updateName(@NotNull Long id, String firstName, String lastName) {
-        EmployeeUser employeeUser = find(id).orElseThrow(IllegalArgumentException::new);
+        EmployeeUser employeeUser = find(id);
         employeeUser.setFirstName(firstName);
         employeeUser.setLastName(lastName);
 
@@ -49,7 +52,7 @@ public class EmployeeUserService {
 
     @Transactional
     public void updateEmail(@NotNull Long id, String email) {
-        EmployeeUser employeeUser = find(id).orElseThrow(IllegalArgumentException::new);
+        EmployeeUser employeeUser = find(id);
         employeeUser.setEmail(email);
 
         employeeUserRepository.save(employeeUser);
@@ -59,7 +62,7 @@ public class EmployeeUserService {
 
     @Transactional
     public void delete(@NotNull Long id) {
-        EmployeeUser employeeUser = find(id).orElseThrow(IllegalArgumentException::new);
+        EmployeeUser employeeUser = find(id);
         employeeUserRepository.delete(employeeUser);
     }
 

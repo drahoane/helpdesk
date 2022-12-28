@@ -51,13 +51,13 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Ticket> find(@NotNull Long id) {
-        return ticketRepository.findById(id);
+    public Ticket find(@NotNull Long id) {
+        return ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, id));
     }
 
     @Transactional
     public void update(@NotNull TicketUpdateDTO ticketUpdateDTO) {
-        Ticket ticket = find(ticketUpdateDTO.id()).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketUpdateDTO.id()));
+        Ticket ticket = find(ticketUpdateDTO.id());
         if(ticketUpdateDTO.priority() != null)
             ticket.setPriority(ticketUpdateDTO.priority());
 

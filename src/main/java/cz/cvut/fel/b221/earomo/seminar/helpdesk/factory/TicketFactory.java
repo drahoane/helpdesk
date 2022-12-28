@@ -54,6 +54,7 @@ public class TicketFactory {
             for(EmployeeUser employee : unassignedEmployees) {
                 if(i == randElement) {
                     ticketBuilder.assignEmployee(employee);
+                    break;
                 }
 
                 i++;

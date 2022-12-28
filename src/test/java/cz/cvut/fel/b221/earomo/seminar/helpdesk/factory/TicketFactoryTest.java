@@ -2,6 +2,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.UserMock;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,7 @@ public class TicketFactoryTest {
     @BeforeEach
     void setUp() {
         userMock.mock();
-        ticket = ticketFactory.createTicket(customerUserRepository.findById(1L).get(), "Ticket1", "first ticket");
+        ticket = ticketFactory.createTicket(customerUserRepository.findById(1L).get(), "Ticket1", "first ticket", TicketPriority.LOW);
         ticketRepository.save(ticket);
     }
 

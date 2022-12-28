@@ -41,7 +41,7 @@ public class TicketController {
     @GetMapping("/{id}")
     @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.owner().email()")
     public TicketDetailDTO getTicket(@PathVariable @NotNull Long id) {
-        return TicketDetailDTO.fromEntity(ticketService.find(id).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, id)));
+        return TicketDetailDTO.fromEntity(ticketService.find(id));
     }
 
     /**
@@ -61,6 +61,12 @@ public class TicketController {
                 .orElseThrow(() -> new ResourceNotFoundException(User.class, "email", principal.getName()));
 
         return TicketDetailDTO.fromEntity(ticketService.create(customer, ticket.title(), ticket.message(), ticket.priority()));
+    }
+
+    @PutMapping
+    @PostAuthorize("hasRole('ROLE_MANAGER') OR " )
+    public void closeTicket(@RequestBody TicketUpdateDTO ticket) {
+        ticketService.find(ticket.id()).setStatus(TicketStatus.RESOLVED);
     }
 
     @DeleteMapping("/{id}")
