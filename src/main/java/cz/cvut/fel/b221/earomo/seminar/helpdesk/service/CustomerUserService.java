@@ -38,23 +38,6 @@ public class CustomerUserService {
         return customerUserRepository.findById(id);
     }
 
-    @Transactional
-    public void updateName(@NotNull Long id, String firstName, String lastName) {
-        CustomerUser customerUser = find(id).orElseThrow(IllegalArgumentException::new);
-        customerUser.setFirstName(firstName);
-        customerUser.setLastName(lastName);
-
-        customerUserRepository.save(customerUser);
-    }
-
-    @Transactional
-    public void updateEmail(@NotNull Long id, String email) {
-        CustomerUser customerUser = find(id).orElseThrow(IllegalArgumentException::new);
-        customerUser.setEmail(email);
-
-        customerUserRepository.save(customerUser);
-    }
-
     // TODO: change password
 
     @Transactional

@@ -4,6 +4,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketMessageRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -21,11 +23,14 @@ import java.util.stream.Collectors;
 public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketFactory ticketFactory;
+    private final TicketMessageRepository ticketMessageRepository;
 
     @Autowired
-    public TicketService(TicketRepository ticketRepository, TicketFactory ticketFactory) {
+    public TicketService(TicketRepository ticketRepository, TicketFactory ticketFactory,
+                         TicketMessageRepository ticketMessageRepository) {
         this.ticketRepository = ticketRepository;
         this.ticketFactory = ticketFactory;
+        this.ticketMessageRepository = ticketMessageRepository;
     }
 
     @Transactional
@@ -78,5 +83,21 @@ public class TicketService {
         ticket.getAssignedEmployees().add(employee);
 
         ticketRepository.save(ticket);
+    }
+
+    @Transactional
+    public TicketMessage addTicketMessage(@NotNull User sender, @NotNull Long ticketID, @NotNull String message) {
+        Ticket ticket = find(ticketID);
+        TicketMessage ticketMessage = new TicketMessage();
+        ticketMessage.setSender(sender);
+        ticketMessage.setTicket(ticket);
+        ticketMessage.setMessage(message);
+        ticketMessage.setCreatedAt(LocalDateTime.now());
+        ticket.getMessages().add(ticketMessage);
+
+        ticketMessageRepository.save(ticketMessage);
+        ticketRepository.save(ticket);
+
+        return ticketMessage;
     }
 }

@@ -36,23 +36,6 @@ public class ManagerUserService {
         return managerUserRepository.findById(id);
     }
 
-    @Transactional
-    public void updateName(@NotNull Long id, String firstName, String lastName) {
-        ManagerUser managerUser = find(id).orElseThrow(IllegalArgumentException::new);
-        managerUser.setFirstName(firstName);
-        managerUser.setLastName(lastName);
-
-        managerUserRepository.save(managerUser);
-    }
-
-    @Transactional
-    public void updateEmail(@NotNull Long id, String email) {
-        ManagerUser managerUser = find(id).orElseThrow(IllegalArgumentException::new);
-        managerUser.setEmail(email);
-
-        managerUserRepository.save(managerUser);
-    }
-
     // TODO: change password
 
     @Transactional

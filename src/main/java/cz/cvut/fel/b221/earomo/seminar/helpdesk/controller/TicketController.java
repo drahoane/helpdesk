@@ -2,6 +2,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.CreateTicketDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketDetailDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketMessageDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
@@ -12,11 +13,9 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +35,7 @@ public class TicketController {
 
     /**
      * Returns all tickets of signed-in customer or all tickets if signed-in user is EMPLOYEE or MANAGER.
+     *
      * @return
      */
     @PostFilter("hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE') OR principal.username == filterObject.owner().email()")
@@ -52,20 +52,21 @@ public class TicketController {
 
     /**
      * Updates status and/or priority
-     * @param ticket
+     *
+     * @param ticketDto
      */
 
     @PutMapping
     public void updateTicket(@RequestBody TicketUpdateDTO ticketDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findByEmail(principal.getName()).orElseThrow(() -> new ResourceNotFoundException(User.class, "email", principal.getName()));
+        User user = userService.findByEmail(auth.getName()).orElseThrow(() -> new ResourceNotFoundException(User.class, "email", auth.getName()));
         Ticket ticket = ticketService.find(ticketDto.id());
 
-        if(ticket.getOwner().getUserId() != user.getUserId() ||
-            auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER") ||
-                    a.getAuthority().equals("ROLE_EMPLOYEE")
-                )
+        if (ticket.getOwner().getUserId() != user.getUserId() ||
+                auth.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER") ||
+                                a.getAuthority().equals("ROLE_EMPLOYEE")
+                        )
         ) {
             throw new InsufficientPermissionsException(Ticket.class, ticketDto.id(), "update");
         }
@@ -84,9 +85,18 @@ public class TicketController {
     }
 
     @PutMapping
-    @PostAuthorize("hasRole('ROLE_MANAGER') OR " )
-    public void closeTicket(@RequestBody TicketUpdateDTO ticket) {
-        ticketService.find(ticket.id()).setStatus(TicketStatus.RESOLVED);
+    public void closeTicket(@RequestBody TicketUpdateDTO ticketDTO) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (ticketDTO.owner().email().equals(auth.getName()) ||
+                ticketDTO.assignedEmployees().stream().anyMatch(e -> e.email().equals(auth.getName())) ||
+                auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"))) {
+            Ticket ticket = ticketService.find(ticketDTO.id());
+            ticket.setStatus(TicketStatus.RESOLVED);
+            ticketService.update(ticketDTO);
+        } else {
+            throw new InsufficientPermissionsException(Ticket.class, ticketDTO.id(), "close");
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -99,5 +109,26 @@ public class TicketController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     public void assignEmployee(@PathVariable @NotNull Long id, @RequestBody Long employeeId) {
         ticketService.assignEmployee(ticketService.find(id), employeeUserService.find(employeeId));
+    }
+
+    @GetMapping("/{id}/message")
+    public Set<TicketMessageDTO> getTicketMessages(@PathVariable @NotNull Long id) {
+        return ticketService.find(id).getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet());
+    }
+
+    @GetMapping("/{ticketID}/message/{msgID}")
+    public TicketMessageDTO getTicketMessage(@PathVariable @NotNull Long ticketID, @PathVariable @NotNull Long msgID) {
+        return TicketMessageDTO.fromEntity(
+                ticketService.find(ticketID)
+                        .getMessages().stream().filter(m -> m.getTicketMessageId().equals(msgID)).findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException(TicketMessage.class, msgID)));
+    }
+
+    @PostMapping("/{id}/message/add")
+    public TicketMessageDTO addTicketMessage(Principal principal, @PathVariable @NotNull Long id,
+                                             @RequestBody @NotNull String message) {
+        User user = userService.findByEmail(principal.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(User.class, "email", principal.getName()));
+        return TicketMessageDTO.fromEntity(ticketService.addTicketMessage(user, id, message));
     }
 }
