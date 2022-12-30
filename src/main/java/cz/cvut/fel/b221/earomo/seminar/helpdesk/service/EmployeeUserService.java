@@ -22,7 +22,6 @@ public class EmployeeUserService {
     private final EmployeeUserRepository employeeUserRepository;
     private final UserFactory userFactory;
     private final TicketRepository ticketRepository;
-    private final TicketService ticketService;
 
     public EmployeeUser create(String firstName, String lastName, String email, String password) {
         EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);

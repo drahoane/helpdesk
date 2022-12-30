@@ -9,5 +9,4 @@ import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     public Optional<User> findByEmail(String email);
-    public Set<User> findAllByUserType(UserType userType);
 }

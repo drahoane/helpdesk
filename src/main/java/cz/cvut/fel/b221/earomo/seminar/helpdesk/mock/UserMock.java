@@ -23,12 +23,13 @@ public class UserMock {
     private final EmployeeUserRepository employeeUserRepository;
     private final ManagerUserRepository managerUserRepository;
     private final UserFactory userFactory;
+    private final PasswordEncoder passwordEncoder;
 
     public void mock() {
-        CustomerUser cu1 = (CustomerUser) userFactory.createUser("Alan", "Black", "alan@black.com", "none", UserType.CUSTOMER);
-        CustomerUser cu2 = (CustomerUser) userFactory.createUser("Miriam", "Orange", "miriam@orange.com", "none", UserType.CUSTOMER);
-        EmployeeUser eu1 = (EmployeeUser) userFactory.createUser("John", "Smith", "john@smith.com", "none", UserType.EMPLOYEE);
-        ManagerUser mu1 = (ManagerUser) userFactory.createUser("Peter", "Tee", "peter@tee.com", "none", UserType.MANAGER);
+        CustomerUser cu1 = (CustomerUser) userFactory.createUser("Alan", "Black", "alan@black.com", passwordEncoder.encode("none"), UserType.CUSTOMER);
+        CustomerUser cu2 = (CustomerUser) userFactory.createUser("Miriam", "Orange", "miriam@orange.com", passwordEncoder.encode("none"), UserType.CUSTOMER);
+        EmployeeUser eu1 = (EmployeeUser) userFactory.createUser("John", "Smith", "john@smith.com", passwordEncoder.encode("none"), UserType.EMPLOYEE);
+        ManagerUser mu1 = (ManagerUser) userFactory.createUser("Peter", "Tee", "peter@tee.com", passwordEncoder.encode("none"), UserType.MANAGER);
 
         customerUserRepository.save(cu1);
         customerUserRepository.save(cu2);

@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy
 public class UserFactory {
-    private final PasswordEncoder passwordEncoder;
-    public User createUser(String firstName, String lastName, String email, String password, UserType userType) {
+    public User createUser(String firstName, String lastName, String email, String encodedPassword, UserType userType) {
         User user;
         switch(userType) {
             case CUSTOMER -> user = new CustomerUser();
@@ -23,7 +22,7 @@ public class UserFactory {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(encodedPassword);
 
         return user;
     }

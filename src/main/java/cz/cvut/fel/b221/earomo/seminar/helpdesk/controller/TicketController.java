@@ -84,18 +84,18 @@ public class TicketController {
         return TicketDetailDTO.fromEntity(ticketService.create(customer, ticket.title(), ticket.message(), ticket.priority()));
     }
 
-    @PutMapping
-    public void closeTicket(@RequestBody TicketUpdateDTO ticketDTO) {
+    @PutMapping("/{id}/close")
+    public void closeTicket(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Ticket ticket = ticketService.find(id);
 
-        if (ticketDTO.owner().email().equals(auth.getName()) ||
-                ticketDTO.assignedEmployees().stream().anyMatch(e -> e.email().equals(auth.getName())) ||
+        if (ticket.getOwner().getEmail().equals(auth.getName()) ||
+                ticket.getAssignedEmployees().stream().anyMatch(e -> e.getEmail().equals(auth.getName())) ||
                 auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"))) {
-            Ticket ticket = ticketService.find(ticketDTO.id());
             ticket.setStatus(TicketStatus.RESOLVED);
-            ticketService.update(ticketDTO);
+            ticketService.update(TicketUpdateDTO.fromEntity(ticket));
         } else {
-            throw new InsufficientPermissionsException(Ticket.class, ticketDTO.id(), "close");
+            throw new InsufficientPermissionsException(Ticket.class, id, "close");
         }
     }
 
@@ -116,7 +116,7 @@ public class TicketController {
         return ticketService.find(id).getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet());
     }
 
-    @GetMapping("/{ticketID}/message/{msgID}")
+    @GetMapping("/{ticketID}/message/{msgID}") // This could be useful in some cases, but I don't think it'll be useful to us.
     public TicketMessageDTO getTicketMessage(@PathVariable @NotNull Long ticketID, @PathVariable @NotNull Long msgID) {
         return TicketMessageDTO.fromEntity(
                 ticketService.find(ticketID)

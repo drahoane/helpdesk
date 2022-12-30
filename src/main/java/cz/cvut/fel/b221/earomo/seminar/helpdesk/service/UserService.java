@@ -7,18 +7,21 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserFactory userFactory;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public User find(Long id) {
@@ -37,7 +40,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Set<User> findAllByUserType(UserType userType) {
-        return userRepository.findAllByUserType(userType);
+        return userRepository.findAll().stream().filter(x -> x.getUserType() == userType).collect(Collectors.toSet());
     }
 
     @Transactional
@@ -60,7 +63,7 @@ public class UserService {
     @Transactional
     public User create(@NotNull String firstName, @NotNull String lastName, @NotNull String email,
                          @NotNull String password, @NotNull UserType userType) {
-        User user = userFactory.createUser(firstName, lastName, email, password, userType);
+        User user = userFactory.createUser(firstName, lastName, email, passwordEncoder.encode(password), userType);
         userRepository.save(user);
 
         return user;
