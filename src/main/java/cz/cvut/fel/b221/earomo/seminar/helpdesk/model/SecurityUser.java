@@ -58,4 +58,21 @@ public class SecurityUser implements UserDetails {
     public boolean isEnabled() {
         return !user.isAccountDisabled();
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public boolean hasRole(Role role) {
+        return getAuthorities().stream().anyMatch(x -> x.getAuthority().equals(role.getName()));
+    }
+
+    public boolean hasAnyRole(Role... roles) {
+        for(Role role : roles) {
+            if(hasRole(role))
+                return true;
+        }
+
+        return false;
+    }
 }

@@ -11,7 +11,9 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepositor
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.security.SecurityUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
@@ -31,7 +33,6 @@ public class TicketController {
     private final TicketService ticketService;
     private final UserService userService;
     private final EmployeeUserService employeeUserService;
-    private final CustomerUserRepository customerUserRepository;
 
     /**
      * Returns all tickets of signed-in customer or all tickets if signed-in user is EMPLOYEE or MANAGER.
@@ -58,16 +59,10 @@ public class TicketController {
 
     @PutMapping
     public void updateTicket(@RequestBody TicketUpdateDTO ticketDto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findByEmail(auth.getName()).orElseThrow(() -> new ResourceNotFoundException(User.class, "email", auth.getName()));
         Ticket ticket = ticketService.find(ticketDto.id());
+        SecurityUser securityUser = SecurityUtils.getCurrentUser();
 
-        if (ticket.getOwner().getUserId() != user.getUserId() ||
-                auth.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER") ||
-                                a.getAuthority().equals("ROLE_EMPLOYEE")
-                        )
-        ) {
+        if (ticket.getOwner().getUserId() != securityUser.getUser().getUserId() && !securityUser.hasAnyRole(Role.EMPLOYEE, Role.CUSTOMER)) {
             throw new InsufficientPermissionsException(Ticket.class, ticketDto.id(), "update");
         }
 
@@ -86,16 +81,19 @@ public class TicketController {
 
     @PutMapping("/{id}/close")
     public void closeTicket(@PathVariable Long id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Ticket ticket = ticketService.find(id);
+        SecurityUser securityUser = SecurityUtils.getCurrentUser();
 
-        if (ticket.getOwner().getEmail().equals(auth.getName()) ||
-                ticket.getAssignedEmployees().stream().anyMatch(e -> e.getEmail().equals(auth.getName())) ||
-                auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"))) {
+        if (ticket.getOwner().getUserId() != securityUser.getUser().getUserId() &&
+                securityUser.hasRole(Role.MANAGER) &&
+                !(securityUser.getUser().getUserType() == UserType.EMPLOYEE &&
+                        ((EmployeeUser)securityUser.getUser()).getAssignedTickets().contains(ticket))
+        ) {
+            // Ticket can be closed only by ticket owner, assigned employee and manager
+            throw new InsufficientPermissionsException(Ticket.class, id, "close");
+        } else {
             ticket.setStatus(TicketStatus.RESOLVED);
             ticketService.update(TicketUpdateDTO.fromEntity(ticket));
-        } else {
-            throw new InsufficientPermissionsException(Ticket.class, id, "close");
         }
     }
 
@@ -111,11 +109,13 @@ public class TicketController {
         ticketService.assignEmployee(ticketService.find(id), employeeUserService.find(employeeId));
     }
 
+    // TODO: Permissions
     @GetMapping("/{id}/message")
     public Set<TicketMessageDTO> getTicketMessages(@PathVariable @NotNull Long id) {
         return ticketService.find(id).getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet());
     }
 
+    // TODO: Permissions
     @GetMapping("/{ticketID}/message/{msgID}") // This could be useful in some cases, but I don't think it'll be useful to us.
     public TicketMessageDTO getTicketMessage(@PathVariable @NotNull Long ticketID, @PathVariable @NotNull Long msgID) {
         return TicketMessageDTO.fromEntity(
@@ -124,6 +124,7 @@ public class TicketController {
                         .orElseThrow(() -> new ResourceNotFoundException(TicketMessage.class, msgID)));
     }
 
+    // TODO: Permissions
     @PostMapping("/{id}/message/add")
     public TicketMessageDTO addTicketMessage(Principal principal, @PathVariable @NotNull Long id,
                                              @RequestBody @NotNull String message) {
