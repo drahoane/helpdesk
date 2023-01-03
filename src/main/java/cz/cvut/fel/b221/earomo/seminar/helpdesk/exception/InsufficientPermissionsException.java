@@ -1,5 +1,9 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class InsufficientPermissionsException extends RuntimeException {
     public InsufficientPermissionsException() {
         super();

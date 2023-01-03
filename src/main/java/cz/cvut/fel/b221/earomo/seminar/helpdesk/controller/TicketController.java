@@ -7,19 +7,15 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
-import org.apache.catalina.security.SecurityUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -109,27 +105,36 @@ public class TicketController {
         ticketService.assignEmployee(ticketService.find(id), employeeUserService.find(employeeId));
     }
 
-    // TODO: Permissions
+    @PostFilter("hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE') OR principal.username == filterObject.sender().email()")
     @GetMapping("/{id}/message")
     public Set<TicketMessageDTO> getTicketMessages(@PathVariable @NotNull Long id) {
         return ticketService.find(id).getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet());
     }
 
-    // TODO: Permissions
-    @GetMapping("/{ticketID}/message/{msgID}") // This could be useful in some cases, but I don't think it'll be useful to us.
-    public TicketMessageDTO getTicketMessage(@PathVariable @NotNull Long ticketID, @PathVariable @NotNull Long msgID) {
+    @GetMapping("/{ticketId}/message/{msgId}") // This could be useful in some cases, but I don't think it'll be useful to us.
+    @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.sender().email()")
+    public TicketMessageDTO getTicketMessage(@PathVariable @NotNull Long ticketId, @PathVariable @NotNull Long msgId) {
+        Ticket ticket = ticketService.find(ticketId);
+        if(SecurityUtils.getCurrentUser().getUser().getUserType().equals(UserType.EMPLOYEE) && ticket.getAssignedEmployees().stream().noneMatch(e -> e.getUserId().equals(SecurityUtils.getCurrentUser().getUser().getUserId()))) {
+            throw new InsufficientPermissionsException(TicketMessage.class, msgId, "get");
+        }
         return TicketMessageDTO.fromEntity(
-                ticketService.find(ticketID)
-                        .getMessages().stream().filter(m -> m.getTicketMessageId().equals(msgID)).findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException(TicketMessage.class, msgID)));
+                ticket.getMessages().stream().filter(m -> m.getTicketMessageId().equals(msgId)).findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException(TicketMessage.class, msgId)));
     }
 
-    // TODO: Permissions
     @PostMapping("/{id}/message/add")
-    public TicketMessageDTO addTicketMessage(Principal principal, @PathVariable @NotNull Long id,
+    public TicketMessageDTO addTicketMessage(@PathVariable @NotNull Long id,
                                              @RequestBody @NotNull String message) {
-        User user = userService.findByEmail(principal.getName())
-                .orElseThrow(() -> new ResourceNotFoundException(User.class, "email", principal.getName()));
-        return TicketMessageDTO.fromEntity(ticketService.addTicketMessage(user, id, message));
+        SecurityUser securityUser = SecurityUtils.getCurrentUser();
+        Ticket ticket = ticketService.find(id);
+        if ((ticket.getOwner().getUserId() != securityUser.getUser().getUserId() &&
+                !securityUser.hasRole(Role.MANAGER)) ||
+                !(securityUser.getUser().getUserType() == UserType.EMPLOYEE &&
+                        ((EmployeeUser)securityUser.getUser()).getAssignedTickets().contains(ticket))
+        ) {
+            throw new InsufficientPermissionsException(TicketMessage.class, id, "add");
+        }
+        return TicketMessageDTO.fromEntity(ticketService.addTicketMessage(SecurityUtils.getCurrentUser().getUser(), id, message));
     }
 }
