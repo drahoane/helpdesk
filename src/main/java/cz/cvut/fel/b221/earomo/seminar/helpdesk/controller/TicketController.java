@@ -89,7 +89,6 @@ public class TicketController {
             // Ticket can be closed only by ticket owner, assigned employee and manager
             throw new InsufficientPermissionsException(Ticket.class, id, "close");
         } else {
-            ticket.setStatus(TicketStatus.RESOLVED);
             ticketService.update(ticket.getTicketId(), null, TicketStatus.RESOLVED);
         }
     }
