@@ -3,6 +3,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -32,6 +33,7 @@ public abstract class User {
     private UserType userType;
 
     @OneToMany(mappedBy = "sender")
+    @Lazy
     private Set<TicketMessage> ticketMessages;
 
     public abstract UserType getUserType();

@@ -10,7 +10,6 @@ public class SecurityUtils {
         SecurityContext securityContextHolder = SecurityContextHolder.getContext();
 
         assert securityContextHolder != null;
-
-        return (SecurityUser) securityContextHolder.getAuthentication().getDetails();
+        return (SecurityUser) securityContextHolder.getAuthentication().getPrincipal();
     }
 }

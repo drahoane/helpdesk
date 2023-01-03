@@ -108,7 +108,11 @@ public class TicketController {
     @PostFilter("hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE') OR principal.username == filterObject.sender().email()")
     @GetMapping("/{id}/message")
     public Set<TicketMessageDTO> getTicketMessages(@PathVariable @NotNull Long id) {
-        return ticketService.find(id).getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet());
+        Ticket ticket = ticketService.find(id);
+        if(SecurityUtils.getCurrentUser().getUser().getUserType().equals(UserType.EMPLOYEE) && ticket.getAssignedEmployees().stream().noneMatch(e -> e.getUserId().equals(SecurityUtils.getCurrentUser().getUser().getUserId()))) {
+            throw new InsufficientPermissionsException(TicketMessage.class, id, "get");
+        }
+        return ticket.getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet());
     }
 
     @GetMapping("/{ticketId}/message/{msgId}") // This could be useful in some cases, but I don't think it'll be useful to us.
