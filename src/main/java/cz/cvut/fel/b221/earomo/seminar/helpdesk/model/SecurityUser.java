@@ -78,4 +78,24 @@ public class SecurityUser implements UserDetails {
 
         return false;
     }
+
+    public boolean isAssignedToTicket(Ticket ticket) {
+        return ticket.getAssignedEmployees().stream().anyMatch(x -> x.getUserId().equals(this.user.getUserId()));
+    }
+
+    public boolean ownsTicket(Ticket ticket) {
+        return user.getUserId().equals(ticket.getOwner().getUserId());
+    }
+
+    public boolean isCustomer() {
+        return user.getUserType().equals(UserType.CUSTOMER);
+    }
+
+    public boolean isEmployee() {
+        return user.getUserType().equals(UserType.EMPLOYEE);
+    }
+
+    public boolean isManager() {
+        return user.getUserType().equals(UserType.MANAGER);
+    }
 }

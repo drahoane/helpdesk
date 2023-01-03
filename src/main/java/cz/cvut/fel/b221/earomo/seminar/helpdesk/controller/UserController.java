@@ -1,7 +1,7 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.*;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.AlreadyExistingResourceException;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.security.EmailAlreadyTakenException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
@@ -67,7 +67,7 @@ public class UserController {
     //@PreAuthorize("hasRole('ROLE_MANAGER')")
     public UserDTO createUser(@RequestBody @NotNull CreateUserDTO createUserDTO) {
         if(userService.findAll().stream().anyMatch(u -> u.getEmail().equals(createUserDTO.email()))) {
-            throw new AlreadyExistingResourceException(User.class, createUserDTO.email());
+            throw new EmailAlreadyTakenException(User.class, createUserDTO.email());
         }
         return UserDTO.fromEntity(userService.create(createUserDTO.firstName(), createUserDTO.lastName(),
                 createUserDTO.email(), createUserDTO.password(), createUserDTO.userType()));

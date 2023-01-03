@@ -16,32 +16,21 @@ public class OpenTicketState extends TicketState {
         TicketState newState;
 
         if(newStatus == TicketStatus.RESOLVED) {
-            if(
-                    (securityUser.getUser().getUserType().equals(UserType.CUSTOMER) && securityUser.getUser().getUserId() != getContext().getOwner().getUserId())
-                    ||
-                    (securityUser.hasRole(Role.EMPLOYEE) && getContext().getAssignedEmployees().stream().noneMatch(x -> x.getUserId().equals(securityUser.getUser().getUserId())))
-
-            ) {
+            if(securityUser.isCustomer() && !securityUser.ownsTicket(getContext()) ||
+                    securityUser.isEmployee() && !securityUser.isAssignedToTicket(getContext())) {
                 throw new IllegaleStateChangeException(Ticket.class, getContext().getTicketId(), this.getClass(), ResolvedTicketState.class);
             }
 
             newState = new ResolvedTicketState();
         } else if(newStatus.equals(TicketStatus.AWAITING_RESPONSE)) {
-            if(securityUser.getUser().getUserType().equals(UserType.CUSTOMER) ||
-                    (securityUser.hasRole(Role.EMPLOYEE) && getContext().getAssignedEmployees().stream().noneMatch(x -> x.getUserId().equals(securityUser.getUser().getUserId())))
-            ) {
+            if(securityUser.isCustomer() || securityUser.isEmployee() && !securityUser.isAssignedToTicket(getContext())) {
                 throw new IllegaleStateChangeException(Ticket.class, getContext().getTicketId(), this.getClass(), AwaitingResponseTicketState.class);
             }
 
             newState = new AwaitingResponseTicketState();
         }
         else if(newStatus.equals(TicketStatus.OPEN)) {
-            if((securityUser.getUser().getUserType().equals(UserType.CUSTOMER) && !securityUser.getUser().getUserId().equals(getContext().getOwner().getUserId())) ||
-                    (securityUser.hasRole(Role.EMPLOYEE) && getContext().getAssignedEmployees().stream().noneMatch(x -> x.getUserId().equals(securityUser.getUser().getUserId())))
-            ) {
-                throw new IllegaleStateChangeException(Ticket.class, getContext().getTicketId(), this.getClass(), OpenTicketState.class);
-            }
-            return;
+            throw new IllegaleStateChangeException("This state is already set.");
         } else {
             throw new IllegaleStateChangeException(Ticket.class, getContext().getTicketId(), this.getClass());
         }

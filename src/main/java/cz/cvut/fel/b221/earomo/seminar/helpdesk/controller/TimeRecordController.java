@@ -1,26 +1,17 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
-
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketDetailDTO;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.AlreadyExistingResourceException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Role;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TimeRecordRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TimeRecordService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

@@ -1,7 +1,8 @@
-package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
+package cz.cvut.fel.b221.earomo.seminar.helpdesk.service.security;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

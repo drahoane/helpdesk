@@ -56,14 +56,14 @@ public class TicketService {
     }
 
     @Transactional
-    public void update(@NotNull TicketUpdateDTO ticketUpdateDTO) {
-        Ticket ticket = find(ticketUpdateDTO.id());
-        if(ticketUpdateDTO.priority() != null)
-            ticket.setPriority(ticketUpdateDTO.priority());
+    public void update(@NotNull Long ticketId, TicketPriority ticketPriority, TicketStatus ticketStatus) {
+        Ticket ticket = find(ticketId);
+        if(ticketPriority != null)
+            ticket.setPriority(ticketPriority);
 
         // No permissions verification needed, it is already being verified by state machine
-        if(ticketUpdateDTO.status() != null) {
-            ticket.getState().changeState(ticketUpdateDTO.status());
+        if(ticketStatus != null) {
+            ticket.getState().changeState(ticketStatus);
         }
 
         ticketRepository.save(ticket);

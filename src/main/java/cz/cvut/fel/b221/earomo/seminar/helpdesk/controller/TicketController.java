@@ -7,6 +7,9 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
@@ -64,7 +67,7 @@ public class TicketController {
 
         // TODO
 
-        ticketService.update(ticketDto);
+        ticketService.update(ticketDto.id(), ticketDto.priority(), ticketDto.status());
     }
 
     @PostMapping
@@ -75,21 +78,19 @@ public class TicketController {
         return TicketDetailDTO.fromEntity(ticketService.create(customer, ticket.title(), ticket.message(), ticket.priority()));
     }
 
-    @PutMapping("/{id}/close")
+    @GetMapping("/{id}/close")
     public void closeTicket(@PathVariable Long id) {
         Ticket ticket = ticketService.find(id);
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
 
-        if (ticket.getOwner().getUserId() != securityUser.getUser().getUserId() &&
-                securityUser.hasRole(Role.MANAGER) &&
-                !(securityUser.getUser().getUserType() == UserType.EMPLOYEE &&
-                        ((EmployeeUser)securityUser.getUser()).getAssignedTickets().contains(ticket))
+        if (securityUser.isCustomer() && !securityUser.ownsTicket(ticket) ||
+            securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket)
         ) {
             // Ticket can be closed only by ticket owner, assigned employee and manager
             throw new InsufficientPermissionsException(Ticket.class, id, "close");
         } else {
             ticket.setStatus(TicketStatus.RESOLVED);
-            ticketService.update(TicketUpdateDTO.fromEntity(ticket));
+            ticketService.update(ticket.getTicketId(), null, TicketStatus.RESOLVED);
         }
     }
 
