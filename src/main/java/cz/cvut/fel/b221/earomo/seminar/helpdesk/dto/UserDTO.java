@@ -1,7 +1,7 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.dto;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.UserType;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 
 public record UserDTO(Long id, String firstName, String lastName, String email, UserType userType) {
     public static UserDTO fromEntity(User entity) {

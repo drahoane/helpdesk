@@ -2,9 +2,8 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.builder.TicketBuilder;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
-import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -14,9 +13,12 @@ import java.util.Set;
 
 @Component
 @Lazy
-@AllArgsConstructor
 public class TicketFactory {
     private final EmployeeUserService employeeUserService;
+
+    public TicketFactory(EmployeeUserService employeeUserService) {
+        this.employeeUserService = employeeUserService;
+    }
 
     public Ticket createTicket(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message,
                                @NotNull TicketPriority priority) {

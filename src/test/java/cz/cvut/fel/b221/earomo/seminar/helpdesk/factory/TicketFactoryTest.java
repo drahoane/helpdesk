@@ -2,7 +2,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.UserMock;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketPriority;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,5 +1,7 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.model;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.GrantedAuthority;

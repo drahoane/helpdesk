@@ -1,9 +1,9 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @AllArgsConstructor

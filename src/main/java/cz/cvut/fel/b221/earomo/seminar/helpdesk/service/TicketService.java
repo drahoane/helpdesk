@@ -4,20 +4,18 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketMessageRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class TicketService {
@@ -63,8 +61,9 @@ public class TicketService {
         if(ticketUpdateDTO.priority() != null)
             ticket.setPriority(ticketUpdateDTO.priority());
 
+        // No permissions verification needed, it is already being verified by state machine
         if(ticketUpdateDTO.status() != null) {
-            ticket.setStatus(ticketUpdateDTO.status());
+            ticket.getState().changeState(ticketUpdateDTO.status());
         }
 
         ticketRepository.save(ticket);

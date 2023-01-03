@@ -1,11 +1,16 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.model;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.state.AwaitingResponseTicketState;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.state.OpenTicketState;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.state.ResolvedTicketState;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.state.TicketState;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -40,4 +45,22 @@ public class Ticket {
 
     @OneToMany(mappedBy = "ticket")
     private Set<TimeRecord> timeRecords;
+
+    @Transient
+    private TicketState state;
+
+    public TicketState getState() {
+        if(state == null) {
+            switch (status) {
+                case OPEN -> state = new OpenTicketState();
+                case AWAITING_RESPONSE -> state = new AwaitingResponseTicketState();
+                case RESOLVED -> state = new ResolvedTicketState();
+                default -> throw new RuntimeException("Undefined state");
+            }
+
+            state.setContext(this);
+        }
+
+        return state;
+    }
 }

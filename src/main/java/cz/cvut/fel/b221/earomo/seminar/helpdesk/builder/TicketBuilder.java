@@ -1,6 +1,8 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.builder;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;

@@ -1,8 +1,8 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.dto;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketPriority;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketStatus;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
 
 import java.util.Set;

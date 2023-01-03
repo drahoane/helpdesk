@@ -3,23 +3,20 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.AlreadyExistingResourceException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.*;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @RestController

@@ -2,11 +2,10 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.UserType;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

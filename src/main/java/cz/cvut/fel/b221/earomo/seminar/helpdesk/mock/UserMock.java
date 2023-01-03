@@ -4,17 +4,13 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.ManagerUser;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.UserType;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.ManagerUserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 @Component
 @AllArgsConstructor

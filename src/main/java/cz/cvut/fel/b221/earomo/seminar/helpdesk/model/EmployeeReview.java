@@ -1,5 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.model;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.EmployeeReviewGrade;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
