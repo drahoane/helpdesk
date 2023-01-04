@@ -1,9 +1,13 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.builder.TicketBuilder;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.chain.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
+import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -13,43 +17,34 @@ import java.util.Set;
 
 @Component
 @Lazy
+@AllArgsConstructor
 public class TicketFactory {
     private final EmployeeUserService employeeUserService;
 
-    public TicketFactory(EmployeeUserService employeeUserService) {
-        this.employeeUserService = employeeUserService;
-    }
-
-    public Ticket createTicket(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message,
-                               @NotNull TicketPriority priority) {
+    public Ticket createTicket(@NotNull CustomerUser customerUser, @NotNull String title,
+                               @NotNull TicketPriority priority, Department department, TicketService ticketService) {
         TicketBuilder ticketBuilder = new TicketBuilder();
-        TicketMessage ticketMessage = new TicketMessage();
-
-        ticketMessage.setMessage(message);
-        ticketMessage.setSender(customerUser);
 
         ticketBuilder.setOwner(customerUser);
         ticketBuilder.setTitle(title);
         ticketBuilder.setPriority(priority);
-        ticketBuilder.addMessage(ticketMessage);
+        ticketBuilder.setDepartment(department);
 
-        Set<EmployeeUser> unassignedEmployees = employeeUserService.getAllUnassignedEmployees();
+        Ticket ticket =  ticketBuilder.build();
 
-        if(!unassignedEmployees.isEmpty()) {
-            Random rand = new Random();
-            int randElement = rand.nextInt(unassignedEmployees.size());
-            int i = 0;
+        TicketAssignmentChain accounting = new AccountingChain(ticketService, employeeUserService);
+        TicketAssignmentChain pr = new PrChain(ticketService, employeeUserService);
+        TicketAssignmentChain productSupport = new ProductSupportChain(ticketService, employeeUserService);
+        TicketAssignmentChain sales = new SalesChain(ticketService, employeeUserService);
 
-            for(EmployeeUser employee : unassignedEmployees) {
-                if(i == randElement) {
-                    ticketBuilder.assignEmployee(employee);
-                    break;
-                }
+        accounting.setNext(pr);
+        pr.setNext(productSupport);
+        productSupport.setNext(sales);
 
-                i++;
-            }
-        }
+        accounting.assign(ticket);
 
-        return ticketBuilder.build();
+        ticketService.save(ticket);
+
+        return ticket;
     }
 }

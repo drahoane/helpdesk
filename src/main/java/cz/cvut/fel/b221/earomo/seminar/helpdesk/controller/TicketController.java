@@ -71,11 +71,13 @@ public class TicketController {
     }
 
     @PostMapping
-    public TicketDetailDTO createTicket(Principal principal, @RequestBody @NotNull CreateTicketDTO ticket) {
+    public TicketDetailDTO createTicket(Principal principal, @RequestBody @NotNull CreateTicketDTO ticketDto) {
         CustomerUser customer = (CustomerUser) userService.findByEmail(principal.getName())
                 .orElseThrow(() -> new ResourceNotFoundException(User.class, "email", principal.getName()));
 
-        return TicketDetailDTO.fromEntity(ticketService.create(customer, ticket.title(), ticket.message(), ticket.priority()));
+        Ticket ticket = ticketService.create(customer, ticketDto.title(), ticketDto.message(), ticketDto.priority(), ticketDto.department());
+
+        return TicketDetailDTO.fromEntity(ticket);
     }
 
     @GetMapping("/{id}/close")

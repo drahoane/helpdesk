@@ -1,6 +1,7 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.builder;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import org.jetbrains.annotations.NotNull;
@@ -10,19 +11,18 @@ import java.util.Set;
 
 public class TicketBuilder {
     private CustomerUser owner;
-    private Set<EmployeeUser> assignedEmployees;
+    private final Set<EmployeeUser> assignedEmployees;
     private TicketStatus status;
     private TicketPriority priority;
+    private Department department;
     private String title;
-    private Set<TicketMessage> ticketMessages;
-
-    private Set<TimeRecord> timeRecords;
+    private final Set<TimeRecord> timeRecords;
 
     public TicketBuilder() {
         this.status = TicketStatus.OPEN;
         this.priority = TicketPriority.MEDIUM;
+        this.department = Department.PRODUCT_SUPPORT;
         this.assignedEmployees = new HashSet<>();
-        this.ticketMessages = new HashSet<>();
         this.timeRecords = new HashSet<>();
     }
 
@@ -50,6 +50,15 @@ public class TicketBuilder {
         return this;
     }
 
+    /**
+     * Default value: PRODUCT_SUPPORT
+     */
+    public TicketBuilder setDepartment(@NotNull Department department) {
+        this.department = department;
+
+        return this;
+    }
+
     public TicketBuilder setTitle(@NotNull String title) {
         this.title = title;
 
@@ -58,18 +67,6 @@ public class TicketBuilder {
 
     public TicketBuilder assignEmployee(@NotNull EmployeeUser employee) {
         assignedEmployees.add(employee);
-
-        return this;
-    }
-
-    public TicketBuilder addMessage(@NotNull TicketMessage message) {
-        ticketMessages.add(message);
-
-        return this;
-    }
-
-    public TicketBuilder addMessages(@NotNull Set<TicketMessage> messages) {
-        ticketMessages.addAll(messages);
 
         return this;
     }
@@ -97,10 +94,11 @@ public class TicketBuilder {
         ticket.setOwner(owner);
         ticket.setStatus(status);
         ticket.setPriority(priority);
+        ticket.setDepartment(department);
         ticket.setTitle(title);
         ticket.setAssignedEmployees(assignedEmployees);
-        ticket.setMessages(ticketMessages);
         ticket.setTimeRecords(timeRecords);
+        ticket.setMessages(new HashSet<>());
 
         return ticket;
     }

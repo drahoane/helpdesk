@@ -4,6 +4,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.ManagerUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
@@ -24,8 +25,8 @@ public class UserMock {
     public void mock() {
         CustomerUser cu1 = (CustomerUser) userFactory.createUser("Alan", "Black", "alan@black.com", passwordEncoder.encode("none"), UserType.CUSTOMER);
         CustomerUser cu2 = (CustomerUser) userFactory.createUser("Miriam", "Orange", "miriam@orange.com", passwordEncoder.encode("none"), UserType.CUSTOMER);
-        EmployeeUser eu1 = (EmployeeUser) userFactory.createUser("John", "Smith", "john@smith.com", passwordEncoder.encode("none"), UserType.EMPLOYEE);
-        ManagerUser mu1 = (ManagerUser) userFactory.createUser("Peter", "Tee", "peter@tee.com", passwordEncoder.encode("none"), UserType.MANAGER);
+        EmployeeUser eu1 = (EmployeeUser) userFactory.createUser("John", "Smith", "john@smith.com", passwordEncoder.encode("none"), UserType.EMPLOYEE, Department.PRODUCT_SUPPORT);
+        ManagerUser mu1 = (ManagerUser) userFactory.createUser("Peter", "Tee", "peter@tee.com", passwordEncoder.encode("none"), UserType.MANAGER, Department.SALES);
 
         customerUserRepository.save(cu1);
         customerUserRepository.save(cu2);

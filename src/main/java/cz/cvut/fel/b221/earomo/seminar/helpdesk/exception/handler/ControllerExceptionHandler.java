@@ -21,7 +21,8 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(IllegalStateChangeException.class)
     public ResponseEntity<ErrorHolder> illegalStateChangeExceptionHandler(HelpdeskException e) {
-        return new ResponseEntity<>(new ErrorHolder(e.getMessage()), HttpStatus.NOT_MODIFIED);
+        ErrorHolder error = new ErrorHolder(e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

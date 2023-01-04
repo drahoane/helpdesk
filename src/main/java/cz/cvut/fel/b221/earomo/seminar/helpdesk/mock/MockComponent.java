@@ -14,6 +14,6 @@ public class MockComponent {
     @PostConstruct
     public void mock() {
         userMock.mock();
-        ticketMock.mock();
+        // ticketMock.mock();
     }
 }

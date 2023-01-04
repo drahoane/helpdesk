@@ -4,6 +4,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketMessageRepository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 @Service
@@ -33,9 +35,17 @@ public class TicketService {
 
     @Transactional
     public Ticket create(@NotNull CustomerUser customerUser, @NotNull String title, @NotNull String message,
-                         @NotNull TicketPriority priority) {
-        Ticket ticket = ticketFactory.createTicket(customerUser, title, message, priority);
-        ticketRepository.save(ticket);
+                         @NotNull TicketPriority priority, @NotNull Department department) {
+        Ticket ticket = ticketFactory.createTicket(customerUser, title, priority, department, this);
+
+        TicketMessage ticketMessage = new TicketMessage();
+        ticketMessage.setTicket(ticket);
+        ticketMessage.setSender(customerUser);
+        ticketMessage.setMessage(message);
+
+        ticketMessageRepository.save(ticketMessage);
+
+        ticket.getMessages().add(ticketMessage);
 
         return ticket;
     }
@@ -85,6 +95,24 @@ public class TicketService {
     }
 
     @Transactional
+    public void assignRandomEmployeeFromSet(@NotNull Ticket ticket, @NotNull Set<EmployeeUser> employees) {
+        if(!employees.isEmpty()) {
+            Random rand = new Random();
+            int randElement = rand.nextInt(employees.size());
+            int i = 0;
+
+            for(EmployeeUser employee : employees) {
+                if(i == randElement) {
+                    assignEmployee(ticket, employee);
+                    break;
+                }
+
+                i++;
+            }
+        }
+    }
+
+    @Transactional
     public TicketMessage addTicketMessage(@NotNull User sender, @NotNull Long ticketID, @NotNull String message) {
         Ticket ticket = find(ticketID);
         TicketMessage ticketMessage = new TicketMessage();
@@ -98,5 +126,9 @@ public class TicketService {
         ticketRepository.save(ticket);
 
         return ticketMessage;
+    }
+
+    public void save(Ticket ticket) {
+        ticketRepository.save(ticket);
     }
 }

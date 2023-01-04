@@ -1,6 +1,7 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -23,6 +24,15 @@ public class UserFactory {
         user.setLastName(lastName);
         user.setEmail(email);
         user.setPassword(encodedPassword);
+
+        return user;
+    }
+
+    public User createUser(String firstName, String lastName, String email, String encodedPassword, UserType userType, Department department) {
+        assert userType != UserType.CUSTOMER;
+
+        EmployeeUser user = (EmployeeUser) createUser(firstName, lastName, email, encodedPassword, userType);
+        user.setDepartment(department);
 
         return user;
     }

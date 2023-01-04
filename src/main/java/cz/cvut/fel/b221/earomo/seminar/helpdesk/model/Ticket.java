@@ -1,5 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.model;
 
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.state.AwaitingResponseTicketState;
@@ -33,6 +34,9 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     private TicketPriority priority;
+
+    @Enumerated(EnumType.STRING)
+    private Department department;
 
     @Column(nullable = false)
     private String title;
