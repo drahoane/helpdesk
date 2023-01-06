@@ -46,6 +46,7 @@ public class TicketService {
         ticketMessageRepository.save(ticketMessage);
 
         ticket.getMessages().add(ticketMessage);
+        ticketRepository.save(ticket);
 
         return ticket;
     }
