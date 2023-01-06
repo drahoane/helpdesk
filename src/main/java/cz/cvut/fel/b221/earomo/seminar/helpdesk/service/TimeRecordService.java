@@ -52,6 +52,7 @@ public class TimeRecordService {
     public TimeRecord create(Long ticketId, Long employeeId) {
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
         assert securityUser != null;
+        assert !securityUser.isCustomer();
 
 
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId));

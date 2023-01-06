@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,13 +42,13 @@ public class TimeRecordServiceTest {
     }
 
     @Test
-    @WithMockUser
+    @WithUserDetails("john@smith.com")
     public void createThrowsExceptionForUnassignedEmployee() {
         Ticket ticket = ticketRepository.findAll().get(0);
         EmployeeUser employeeUser = employeeUserRepository.findAll().get(0);
 
-        TimeRecord timeRecord = timeRecordService.create(ticket.getTicketId(), employeeUser.getUserId());
-
-        assertThrows(InsufficientPermissionsException.class,() -> {});
+        assertThrows(InsufficientPermissionsException.class,() ->
+            timeRecordService.create(ticket.getTicketId(), employeeUser.getUserId())
+        );
     }
 }
