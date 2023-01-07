@@ -27,7 +27,12 @@ public class Ticket {
     @ManyToOne
     private CustomerUser owner;
 
-    @ManyToMany(mappedBy = "assignedTickets")
+    @ManyToMany
+    @JoinTable(
+            name = "ticket_employee_user",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "employee_id")
+    )
     private Set<EmployeeUser> assignedEmployees;
 
     @Enumerated(EnumType.STRING)
