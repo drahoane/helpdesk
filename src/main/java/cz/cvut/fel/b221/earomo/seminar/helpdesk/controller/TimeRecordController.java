@@ -1,4 +1,5 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TimeRecordDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
@@ -16,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/timeRecord")
+@RequestMapping("api/v1/time-record")
 @AllArgsConstructor
 public class TimeRecordController {
 
@@ -43,18 +44,20 @@ public class TimeRecordController {
 
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @GetMapping("/{ticketId}/start")
-    public TimeRecord startTimeRecord(@PathVariable @NotNull Long ticketId) {
+    public TimeRecordDTO startTimeRecord(@PathVariable @NotNull Long ticketId) {
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
-        return timeRecordService.create(ticketId, securityUser.getUser().getUserId());
+        return TimeRecordDTO.fromEntity(timeRecordService.create(ticketId, securityUser.getUser().getUserId()));
     }
 
     @GetMapping("/{timeRecordId}/stop")
-    public void stopTimeRecord(@PathVariable @NotNull Long timeRecordId) {
+    public TimeRecordDTO stopTimeRecord(@PathVariable @NotNull Long timeRecordId) {
         TimeRecord timeRecord = timeRecordService.findById(timeRecordId);
         if(timeRecord.getEnd() != null) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Time record #" + timeRecordId + " has already been stopped.");
         }
         timeRecord.setEnd(LocalDateTime.now());
+
+        return TimeRecordDTO.fromEntity(timeRecord);
     }
 
 }
