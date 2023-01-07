@@ -37,7 +37,6 @@ public class TicketFactoryTest {
 
     @BeforeEach
     void setUp() {
-        ticketMessageRepository.deleteAll();
         ticketRepository.deleteAll();
         userRepository.deleteAll();
         userMock.mock();

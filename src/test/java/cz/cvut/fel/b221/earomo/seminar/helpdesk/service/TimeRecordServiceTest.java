@@ -9,6 +9,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -33,10 +34,14 @@ public class TimeRecordServiceTest {
     private UserMock userMock;
     @Autowired
     private TicketMock ticketMock;
+    @Autowired
+    private UserRepository userRepository;
 
 
     @BeforeEach
     public void setUp() {
+        ticketRepository.deleteAll();
+        userRepository.deleteAll();
         userMock.mock();
         ticketMock.mock();
     }

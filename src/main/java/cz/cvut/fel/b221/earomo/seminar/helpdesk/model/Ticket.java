@@ -42,14 +42,14 @@ public class Ticket {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy = "ticket")
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.REMOVE)
     @OrderBy("createdAt DESC")
     private Set<TicketMessage> messages;
 
     @OneToOne
     private EmployeeReview review;
 
-    @OneToMany(mappedBy = "ticket")
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.REMOVE)
     @OrderBy("start DESC")
     private Set<TimeRecord> timeRecords;
 
