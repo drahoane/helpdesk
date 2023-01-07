@@ -134,12 +134,8 @@ public class TicketController {
                                              @RequestBody @NotNull String message) {
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
         Ticket ticket = ticketService.find(id);
-        if ((ticket.getOwner().getUserId() != securityUser.getUser().getUserId() &&
-                !securityUser.hasRole(Role.MANAGER)) ||
-                !(securityUser.getUser().getUserType() == UserType.EMPLOYEE &&
-                        ((EmployeeUser)securityUser.getUser()).getAssignedTickets().contains(ticket))
-        ) {
-            throw new InsufficientPermissionsException(TicketMessage.class, id, "add");
+        if (!securityUser.ownsTicket(ticket) && !securityUser.isManager() && !securityUser.isAssignedToTicket(ticket)) {
+            throw new InsufficientPermissionsException(TicketMessage.class, id, "create");
         }
         return TicketMessageDTO.fromEntity(ticketService.addTicketMessage(SecurityUtils.getCurrentUser().getUser(), id, message));
     }

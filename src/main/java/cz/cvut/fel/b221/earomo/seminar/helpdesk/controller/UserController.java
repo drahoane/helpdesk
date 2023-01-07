@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -37,11 +38,11 @@ public class UserController {
      */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public Set<User> getAllUsers(@RequestParam(required = false, name = "type") UserType userType) {
+    public Set<UserDTO> getAllUsers(@RequestParam(required = false, name = "type") UserType userType) {
         if(userType == null)
-            return userService.findAll();
+            return userService.findAll().stream().map(UserDTO::fromEntity).collect(Collectors.toSet());
 
-        return userService.findAllByUserType(userType);
+        return userService.findAllByUserType(userType).stream().map(UserDTO::fromEntity).collect(Collectors.toSet());
     }
 
     @GetMapping("/{id}")
