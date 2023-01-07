@@ -17,6 +17,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@NamedQuery(name = "Ticket.findAllByStatus", query = "SELECT t FROM Ticket t WHERE t.status = ?1")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -42,12 +43,14 @@ public class Ticket {
     private String title;
 
     @OneToMany(mappedBy = "ticket")
+    @OrderBy("createdAt DESC")
     private Set<TicketMessage> messages;
 
     @OneToOne
     private EmployeeReview review;
 
     @OneToMany(mappedBy = "ticket")
+    @OrderBy("start DESC")
     private Set<TimeRecord> timeRecords;
 
     @Transient

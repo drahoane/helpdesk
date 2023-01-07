@@ -7,6 +7,9 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.UserMock;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketMessageRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @Slf4j
 public class UserFactoryTest {
+    @Autowired
+    private TicketMessageRepository ticketMessageRepository;
+    @Autowired
+    private TicketRepository ticketRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private EmployeeUserRepository employeeUserRepository;
@@ -36,6 +45,9 @@ public class UserFactoryTest {
 
     @BeforeEach
     public void setUp() {
+        ticketMessageRepository.deleteAll();
+        ticketRepository.deleteAll();
+        userRepository.deleteAll();
         userMock.mock();
         ticketMock.mock();
         userFactory = new UserFactory();

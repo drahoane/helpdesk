@@ -4,10 +4,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.UserMock;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketMessageRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,11 +32,16 @@ public class TicketFactoryTest {
     Ticket ticket;
     @Autowired
     private EmployeeUserRepository employeeUserRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
+        ticketMessageRepository.deleteAll();
+        ticketRepository.deleteAll();
+        userRepository.deleteAll();
         userMock.mock();
-        ticket = ticketFactory.createTicket(customerUserRepository.findById(1L).get(), "Ticket1", TicketPriority.LOW, Department.SALES, ticketService);
+        ticket = ticketFactory.createTicket(customerUserRepository.findAll().get(0), "Ticket1", TicketPriority.LOW, Department.SALES, ticketService);
     }
 
     @Test
