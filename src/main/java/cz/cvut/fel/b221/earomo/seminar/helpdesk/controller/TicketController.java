@@ -17,6 +17,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -43,6 +44,7 @@ public class TicketController {
      */
     @PostFilter("hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE') OR principal.username == filterObject.owner().email()")
     @GetMapping
+    @Operation(description = "List of all tickets (MANAGER, EMPLOYEE) | List of all owned tickets (CUSTOMER)")
     public Set<TicketDetailDTO> getAllTickets() {
         Set<Ticket> tickets = ticketService.findAll();
 
@@ -58,6 +60,7 @@ public class TicketController {
 
     @GetMapping("/{id}")
     @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.owner().email()")
+    @Operation(description = "Ticket detail")
     public TicketDetailDTO getTicket(@PathVariable @NotNull Long id) {
         Ticket ticket = ticketService.find(id);
         if (SecurityUtils.getCurrentUser().isEmployee() && !SecurityUtils.getCurrentUser().isAssignedToTicket(ticket))
@@ -73,6 +76,7 @@ public class TicketController {
      */
 
     @PutMapping
+    @Operation(description = "Ticket update")
     public void updateTicket(@RequestBody @Valid TicketUpdateRequest request) {
         Ticket ticket = ticketService.find(request.getTicketId());
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
@@ -93,6 +97,7 @@ public class TicketController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @Operation(description = "Create ticket")
     public TicketDetailDTO createTicket(@RequestBody @Valid CreateTicketRequest request) {
         CustomerUser customer = (CustomerUser) SecurityUtils.getCurrentUser().getUser();
 
@@ -102,6 +107,7 @@ public class TicketController {
     }
 
     @GetMapping("/{id}/close")
+    @Operation(description = "Close ticket")
     public void closeTicket(@PathVariable Long id) {
         Ticket ticket = ticketService.find(id);
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
@@ -118,24 +124,28 @@ public class TicketController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "Delete ticket")
     public void deleteTicket(@PathVariable @NotNull Long id) {
         ticketService.delete(id);
     }
 
     @PostMapping("/{id}/assign")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "Assign employee")
     public void assignEmployee(@PathVariable @NotNull Long id, @RequestBody @Valid AssignEmployeeRequest request) {
         ticketService.assignEmployee(ticketService.find(id), employeeUserService.find(request.getEmployeeId()));
     }
 
     @PostMapping("/{id}/unassign")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "Unassign employee")
     public void unassignEmployee(@PathVariable @NotNull Long id, @RequestBody @Valid AssignEmployeeRequest request) {
         ticketService.unassignEmployee(id, request.getEmployeeId());
     }
 
     @PostFilter("hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE') OR principal.username == filterObject.sender().email()")
     @GetMapping("/{id}/message")
+    @Operation(description = "List of messages linked to a specified ticket")
     public Set<TicketMessageDTO> getTicketMessages(@PathVariable @NotNull Long id) {
         Ticket ticket = ticketService.find(id);
         if (SecurityUtils.getCurrentUser().getUser().getUserType().equals(UserType.EMPLOYEE) && ticket.getAssignedEmployees().stream().noneMatch(e -> e.getUserId().equals(SecurityUtils.getCurrentUser().getUser().getUserId()))) {
@@ -145,8 +155,8 @@ public class TicketController {
     }
 
     @GetMapping("/{ticketId}/message/{msgId}")
-    // This could be useful in some cases, but I don't think it'll be useful to us.
     @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.sender().email()")
+    @Operation(description = "Ticket message detail")
     public TicketMessageDTO getTicketMessage(@PathVariable @NotNull Long ticketId, @PathVariable @NotNull Long msgId) {
         Ticket ticket = ticketService.find(ticketId);
         if (SecurityUtils.getCurrentUser().getUser().getUserType().equals(UserType.EMPLOYEE) && ticket.getAssignedEmployees().stream().noneMatch(e -> e.getUserId().equals(SecurityUtils.getCurrentUser().getUser().getUserId()))) {
@@ -158,6 +168,7 @@ public class TicketController {
     }
 
     @PostMapping("/{id}/message/add")
+    @Operation(description = "Send ticket message")
     public TicketMessageDTO addTicketMessage(@PathVariable @NotNull Long id,
                                              @RequestBody @NotNull String message) {
         SecurityUser securityUser = SecurityUtils.getCurrentUser();

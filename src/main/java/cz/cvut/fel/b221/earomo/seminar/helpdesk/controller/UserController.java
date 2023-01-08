@@ -9,6 +9,8 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.CreateUserRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.UpdateUserRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -36,6 +38,7 @@ public class UserController {
      */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "List of all users")
     public Set<UserDTO> getAllUsers(@RequestParam(required = false, name = "type") UserType userType) {
         if (userType == null)
             return userService.findAll().stream().map(UserDTO::fromEntity).collect(Collectors.toSet());
@@ -45,12 +48,13 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.email()")
+    @Operation(description = "User detail")
     public UserDTO getUser(@PathVariable @NotNull Long id) {
         return UserDTO.fromEntity(userService.find(id));
     }
 
     @PutMapping
-    //@PreAuthorize("hasRole('ROLE_MANAGER') OR principal.username == request.email")
+    @Operation(description = "User update")
     public void updateUser(@RequestBody @Valid UpdateUserRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -63,6 +67,7 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(description = "Create user")
     public UserDTO createUser(@RequestBody @Valid CreateUserRequest request) {
         if (userService.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))) {
             throw new EmailAlreadyTakenException(User.class, request.getEmail());
@@ -81,6 +86,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "Delete user")
     public void deleteUser(@PathVariable @NotNull Long id) {
         userService.delete(id);
     }
