@@ -30,13 +30,10 @@ public class TicketMock {
         TicketBuilder tb = new TicketBuilder();
         TicketMessage tm = new TicketMessage();
         Ticket t1 = tb.setTitle("Ticket1")
-                .setOwner(customerUserRepository.findById(1L).get())
-                .assignEmployee(employeeUserRepository.findById(3L).get())
+                .setOwner(customerUserRepository.findAll().get(0))
                 .build();
         Ticket t2 = tb.setTitle("Ticket2")
-                .setOwner(customerUserRepository.findById(2L).get())
-                .assignEmployee(employeeUserRepository.findById(3L).get())
-                .assignEmployee(managerUserRepository.findById(4L).get())
+                .setOwner(customerUserRepository.findAll().get(1))
                 .build();
 
         ticketRepository.save(t1);

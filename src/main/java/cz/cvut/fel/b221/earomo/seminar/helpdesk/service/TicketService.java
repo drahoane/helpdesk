@@ -1,6 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceAlreadyExistsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
@@ -16,8 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketService {
@@ -90,8 +92,23 @@ public class TicketService {
 
     @Transactional
     public void assignEmployee(@NotNull Ticket ticket, @NotNull EmployeeUser employee) {
+        if(ticket.getAssignedEmployees().contains(employee))
+            throw new ResourceAlreadyExistsException(EmployeeUser.class, employee.getUserId(), "assigned employees");
         ticket.getAssignedEmployees().add(employee);
 
+        ticketRepository.save(ticket);
+    }
+
+    @Transactional
+    public void unassignEmployee(@NotNull Long ticketId, @NotNull Long employeeId) {
+        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId));
+
+        Set<EmployeeUser> newAssignedEmployees = ticket.getAssignedEmployees().stream().filter(e -> !Objects.equals(e.getUserId(), employeeId)).collect(Collectors.toSet());
+
+        if(newAssignedEmployees.size() == ticket.getAssignedEmployees().size())
+            throw new ResourceNotFoundException(EmployeeUser.class, employeeId, "assigned employees");
+
+        ticket.setAssignedEmployees(newAssignedEmployees);
         ticketRepository.save(ticket);
     }
 

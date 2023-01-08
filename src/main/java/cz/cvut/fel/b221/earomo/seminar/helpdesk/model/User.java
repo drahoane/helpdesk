@@ -33,7 +33,7 @@ public abstract class User {
     @Transient
     private UserType userType;
 
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
     @Lazy
     private Set<TicketMessage> ticketMessages;
 

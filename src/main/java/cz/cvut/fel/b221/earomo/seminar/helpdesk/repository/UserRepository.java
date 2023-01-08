@@ -2,6 +2,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.repository;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 

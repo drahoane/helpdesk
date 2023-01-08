@@ -4,6 +4,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.UserUpdateDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -45,17 +46,13 @@ public class UserService {
     }
 
     @Transactional
-    public void update(@NotNull UserUpdateDTO userUpdateDTO) {
-        User user = find(userUpdateDTO.id());
-        if(userUpdateDTO.firstName() != null)
-            user.setFirstName(userUpdateDTO.firstName());
+    public void update(String firstName, String lastName, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(User.class, "email", email));
+        if(firstName != null)
+            user.setFirstName(firstName);
 
-        if(userUpdateDTO.lastName() != null) {
-            user.setLastName(userUpdateDTO.lastName());
-        }
-
-        if(userUpdateDTO.email() != null) {
-            user.setEmail(userUpdateDTO.email());
+        if(lastName != null) {
+            user.setLastName(lastName);
         }
 
         userRepository.save(user);
@@ -63,7 +60,16 @@ public class UserService {
 
     @Transactional
     public User create(@NotNull String firstName, @NotNull String lastName, @NotNull String email,
-                         @NotNull String password, @NotNull UserType userType) {
+                       @NotNull String password, @NotNull UserType userType, @NotNull Department department) {
+        User user = userFactory.createUser(firstName, lastName, email, passwordEncoder.encode(password), userType, department);
+        userRepository.save(user);
+
+        return user;
+    }
+
+    @Transactional
+    public User createCustomer(@NotNull String firstName, @NotNull String lastName, @NotNull String email,
+                       @NotNull String password, @NotNull UserType userType) {
         User user = userFactory.createUser(firstName, lastName, email, passwordEncoder.encode(password), userType);
         userRepository.save(user);
 

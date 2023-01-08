@@ -17,6 +17,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@NamedQuery(name = "Ticket.findAllByStatus", query = "SELECT t FROM Ticket t WHERE t.status = ?1")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -26,7 +27,12 @@ public class Ticket {
     @ManyToOne
     private CustomerUser owner;
 
-    @ManyToMany(mappedBy = "assignedTickets")
+    @ManyToMany(cascade = CascadeType.REMOVE)
+    @JoinTable(
+            name = "ticket_employee_user",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "employee_id")
+    )
     private Set<EmployeeUser> assignedEmployees;
 
     @Enumerated(EnumType.STRING)
@@ -41,13 +47,15 @@ public class Ticket {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy = "ticket")
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.REMOVE)
+    @OrderBy("createdAt DESC")
     private Set<TicketMessage> messages;
 
     @OneToOne
     private EmployeeReview review;
 
-    @OneToMany(mappedBy = "ticket")
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.REMOVE)
+    @OrderBy("start DESC")
     private Set<TimeRecord> timeRecords;
 
     @Transient

@@ -43,6 +43,5 @@ public class CustomerUserService {
     public void delete(@NotNull Long id) {
         CustomerUser customerUser = find(id).orElseThrow(IllegalArgumentException::new);
         customerUserRepository.delete(customerUser);
-        //persist
     }
 }

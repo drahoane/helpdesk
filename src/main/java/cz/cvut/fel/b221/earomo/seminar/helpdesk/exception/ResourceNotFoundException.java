@@ -14,6 +14,10 @@ public class ResourceNotFoundException extends HelpdeskException {
         super("Resource " + c.getSimpleName() + " #" + id + " not found.");
     }
 
+    public ResourceNotFoundException(@NotNull Class c, @NotNull Long id, String scope) {
+        super("Resource " + c.getSimpleName() + " #" + id + " not found. SCOPE: " + scope);
+    }
+
     public ResourceNotFoundException(@NotNull Class c, @NotNull String identifiableBy, @NotNull String id) {
         super("Resource " + c.getSimpleName() + " with " + identifiableBy + " " + id + " not found.");
     }

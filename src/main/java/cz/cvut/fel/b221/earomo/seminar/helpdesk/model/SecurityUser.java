@@ -81,11 +81,11 @@ public class SecurityUser implements UserDetails {
     }
 
     public boolean isAssignedToTicket(Ticket ticket) {
-        return ticket.getAssignedEmployees().stream().anyMatch(x -> x.getUserId().equals(this.user.getUserId()));
+        return isEmployee() && ticket.getAssignedEmployees().stream().anyMatch(x -> x.getUserId().equals(this.user.getUserId()));
     }
 
     public boolean ownsTicket(Ticket ticket) {
-        return user.getUserId().equals(ticket.getOwner().getUserId());
+        return isCustomer() && user.getUserId().equals(ticket.getOwner().getUserId());
     }
 
     public boolean isCustomer() {

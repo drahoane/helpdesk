@@ -8,14 +8,18 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepositor
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TimeRecordRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.TimeRecordUpdateRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,37 +43,66 @@ public class TimeRecordService {
     }
 
     @Transactional(readOnly = true)
-    public Set<TimeRecord> findByTicket(@NotNull Long id) {
-        return ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, id)).getTimeRecords();
-    }
-
-    @Transactional(readOnly = true)
     public TimeRecord findById(@NotNull Long id) {
         return timeRecordRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(TimeRecord.class, id));
     }
 
+    @Transactional(readOnly = true)
+    public Set<TimeRecord> findByTicket(@NotNull Long ticketId) {
+        return timeRecordRepository.findAllByTicket(ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId)));
+    }
+
     @Transactional
-    public TimeRecord create(Long ticketId, Long employeeId) {
+    public TimeRecord create(Long ticketId) {
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
         assert securityUser != null;
         assert !securityUser.isCustomer();
 
+        if(timeRecordRepository.existsByEndIsNullAndEmployee((EmployeeUser) securityUser.getUser())) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "One TimeRecord is already running.");
+        }
 
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId));
-        EmployeeUser employee = employeeUserRepository.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException(EmployeeUser.class, employeeId));
 
-        if(securityUser.getUser().getUserType().equals(UserType.EMPLOYEE) && ticket.getAssignedEmployees().stream().noneMatch(x -> x.getUserId().equals(securityUser.getUser().getUserId())))
+        if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
             throw new InsufficientPermissionsException(TimeRecord.class, "create");
 
         TimeRecord timeRecord = new TimeRecord();
         timeRecord.setStart(LocalDateTime.now());
         timeRecord.setTicket(ticket);
-        timeRecord.setEmployee(employee);
+        timeRecord.setEmployee((EmployeeUser) securityUser.getUser());
 
         timeRecordRepository.save(timeRecord);
-        ticketRepository.save(ticket);
-        employeeUserRepository.save(employee);
 
         return timeRecord;
+    }
+
+    @Transactional
+    public void update(@NotNull Long id, LocalDateTime start, LocalDateTime end) {
+        SecurityUser securityUser = SecurityUtils.getCurrentUser();
+        assert securityUser != null;
+        assert !securityUser.isCustomer();
+
+        TimeRecord timeRecord = timeRecordRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(TimeRecord.class, id));
+        Ticket ticket = timeRecord.getTicket();
+
+        if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
+            throw new InsufficientPermissionsException(TimeRecord.class, "update");
+
+        if(start != null)
+            timeRecord.setStart(start);
+
+        if(end != null)
+            timeRecord.setEnd(end);
+
+        timeRecordRepository.save(timeRecord);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<TimeRecord> getRunning(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(User.class, userId));
+        assert !user.getUserType().equals(UserType.CUSTOMER);
+
+        return timeRecordRepository.findFirstByEndIsNullAndEmployee((EmployeeUser) user);
     }
 }

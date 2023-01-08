@@ -12,12 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class EmployeeUser extends User {
-    @ManyToMany
-    @JoinTable(
-            name = "employee_user_ticket",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "ticket_id")
-    )
+    @ManyToMany(mappedBy = "assignedEmployees", cascade = CascadeType.REMOVE)
     private Set<Ticket> assignedTickets;
 
     @Enumerated(EnumType.STRING)

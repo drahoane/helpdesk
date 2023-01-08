@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class CustomerUser extends User {
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
     private Set<Ticket> tickets;
 
     @OneToMany(mappedBy = "customer")

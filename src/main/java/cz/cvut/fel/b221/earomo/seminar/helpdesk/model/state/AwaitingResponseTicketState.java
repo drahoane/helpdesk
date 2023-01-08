@@ -22,7 +22,7 @@ public class AwaitingResponseTicketState extends TicketState {
 
             newState = new ResolvedTicketState();
         } else if(newStatus.equals(TicketStatus.OPEN)) {
-            if(!securityUser.isEmployee() || securityUser.isCustomer() && !securityUser.ownsTicket(getContext())) {
+            if(securityUser.isEmployee() || securityUser.isCustomer() && !securityUser.ownsTicket(getContext())) {
                 throw new IllegalStateChangeException(Ticket.class, getContext().getTicketId(), this.getClass(), OpenTicketState.class);
             }
 

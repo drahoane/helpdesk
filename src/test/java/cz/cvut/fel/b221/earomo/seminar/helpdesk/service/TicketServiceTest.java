@@ -46,9 +46,13 @@ public class TicketServiceTest {
     private TicketMessageRepository ticketMessageRepository;
     @Autowired
     private TimeRecordRepository timeRecordRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     public void setUp() {
+        ticketRepository.deleteAll();
+        userRepository.deleteAll();
         userMock.mock();
         ticketMock.mock();
     }
