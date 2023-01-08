@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,26 +53,26 @@ public class TimeRecordService {
     }
 
     @Transactional
-    public TimeRecord create(Long ticketId, Long employeeId) {
+    public TimeRecord create(Long ticketId) {
         SecurityUser securityUser = SecurityUtils.getCurrentUser();
         assert securityUser != null;
         assert !securityUser.isCustomer();
 
+        if(timeRecordRepository.existsByEndIsNullAndEmployee((EmployeeUser) securityUser.getUser())) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "One TimeRecord is already running.");
+        }
 
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId));
-        EmployeeUser employee = employeeUserRepository.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException(EmployeeUser.class, employeeId));
 
-        if(securityUser.getUser().getUserType().equals(UserType.EMPLOYEE) && ticket.getAssignedEmployees().stream().noneMatch(x -> x.getUserId().equals(securityUser.getUser().getUserId())))
+        if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
             throw new InsufficientPermissionsException(TimeRecord.class, "create");
 
         TimeRecord timeRecord = new TimeRecord();
         timeRecord.setStart(LocalDateTime.now());
         timeRecord.setTicket(ticket);
-        timeRecord.setEmployee(employee);
+        timeRecord.setEmployee((EmployeeUser) securityUser.getUser());
 
         timeRecordRepository.save(timeRecord);
-        ticketRepository.save(ticket);
-        employeeUserRepository.save(employee);
 
         return timeRecord;
     }

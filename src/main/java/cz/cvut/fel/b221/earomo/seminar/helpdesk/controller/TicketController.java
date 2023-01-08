@@ -8,6 +8,9 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.AssignEmployeeRequest;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.CreateTicketRequest;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.TicketUpdateRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
@@ -19,7 +22,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import javax.validation.Valid;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +42,16 @@ public class TicketController {
     @PostFilter("hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE') OR principal.username == filterObject.owner().email()")
     @GetMapping
     public Set<TicketDetailDTO> getAllTickets() {
-        return ticketService.findAll().stream().map(TicketDetailDTO::fromEntity).collect(Collectors.toSet());
+        Set<Ticket> tickets = ticketService.findAll();
+
+        if(SecurityUtils.getCurrentUser().isEmployee())
+            tickets = tickets.stream().filter(
+                    t -> t.getAssignedEmployees().stream().anyMatch(
+                            e -> e.getUserId().equals(SecurityUtils.getCurrentUser().getUser().getUserId())
+                    )
+            ).collect(Collectors.toSet());
+
+        return tickets.stream().map(TicketDetailDTO::fromEntity).collect(Collectors.toSet());
     }
 
     @GetMapping("/{id}")
@@ -69,6 +81,10 @@ public class TicketController {
             // Ticket can be updated only by ticket owner, assigned employee and manager
             throw new InsufficientPermissionsException(Ticket.class, request.getTicketId(), "update");
         }
+        
+        if(securityUser.isCustomer() && request.getPriority() != null) {
+            throw new InsufficientPermissionsException(Ticket.class, request.getTicketId(), "update priority");
+        }
 
         ticketService.update(request.getTicketId(), request.getPriority(), request.getStatus());
     }
@@ -78,7 +94,7 @@ public class TicketController {
     public TicketDetailDTO createTicket(@RequestBody @Valid CreateTicketRequest request) {
         CustomerUser customer = (CustomerUser) SecurityUtils.getCurrentUser().getUser();
 
-        Ticket ticket = ticketService.create(customer, ticketDto.title(), ticketDto.message(), ticketDto.priority(), ticketDto.department());
+        Ticket ticket = ticketService.create(customer, request.getTitle(), request.getMessage(), request.getPriority(), request.getDepartment());
 
         return TicketDetailDTO.fromEntity(ticket);
     }
@@ -106,8 +122,8 @@ public class TicketController {
 
     @PostMapping("/{id}/assign")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public void assignEmployee(@PathVariable @NotNull Long id, @RequestBody Long employeeId) {
-        ticketService.assignEmployee(ticketService.find(id), employeeUserService.find(employeeId));
+    public void assignEmployee(@PathVariable @NotNull Long id, @RequestBody @Valid AssignEmployeeRequest request) {
+        ticketService.assignEmployee(ticketService.find(id), employeeUserService.find(request.getEmployeeId()));
     }
 
     @PostMapping("/{id}/unassign")

@@ -1,5 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TimeRecordDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/time-record")
 @AllArgsConstructor
+@PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_EMPLOYEE')")
 public class TimeRecordController {
 
     private final TimeRecordService timeRecordService;
