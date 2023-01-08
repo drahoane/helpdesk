@@ -53,7 +53,7 @@ public class TimeRecordServiceTest {
         EmployeeUser employeeUser = employeeUserRepository.findAll().get(0);
 
         assertThrows(InsufficientPermissionsException.class,() ->
-            timeRecordService.create(ticket.getTicketId(), employeeUser.getUserId())
+            timeRecordService.create(ticket.getTicketId())
         );
     }
 }

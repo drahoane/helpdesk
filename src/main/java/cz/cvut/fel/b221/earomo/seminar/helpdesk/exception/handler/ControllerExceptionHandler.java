@@ -1,9 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.handler;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.HelpdeskException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.IllegalStateChangeException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.security.EmailAlreadyTakenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,4 +32,13 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(new ErrorHolder(e.getMessage()), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorHolder> resourceAlreadyExistsExceptionHandler(HelpdeskException e) {
+        return new ResponseEntity<>(new ErrorHolder(e.getMessage()), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InsufficientRequestException.class)
+    public ResponseEntity<ErrorHolder> insufficientRequestExceptionHanlder(HelpdeskException e) {
+        return new ResponseEntity<>(new ErrorHolder(e.getMessage()), HttpStatus.NOT_ACCEPTABLE);
+    }
 }

@@ -1,6 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketUpdateDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceAlreadyExistsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.TicketFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
@@ -90,6 +90,8 @@ public class TicketService {
 
     @Transactional
     public void assignEmployee(@NotNull Ticket ticket, @NotNull EmployeeUser employee) {
+        if(ticket.getAssignedEmployees().contains(employee))
+            throw new ResourceAlreadyExistsException(EmployeeUser.class, employee.getUserId(), "assigned employees");
         ticket.getAssignedEmployees().add(employee);
 
         ticketRepository.save(ticket);
