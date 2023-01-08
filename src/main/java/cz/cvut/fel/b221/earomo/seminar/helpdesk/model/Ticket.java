@@ -27,7 +27,7 @@ public class Ticket {
     @ManyToOne
     private CustomerUser owner;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "ticket_employee_user",
             joinColumns = @JoinColumn(name = "ticket_id"),

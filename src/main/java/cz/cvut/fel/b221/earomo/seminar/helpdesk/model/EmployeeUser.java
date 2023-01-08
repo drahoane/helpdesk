@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class EmployeeUser extends User {
-    @ManyToMany(mappedBy = "assignedEmployees")
+    @ManyToMany(mappedBy = "assignedEmployees", cascade = CascadeType.REMOVE)
     private Set<Ticket> assignedTickets;
 
     @Enumerated(EnumType.STRING)

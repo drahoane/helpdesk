@@ -31,12 +31,9 @@ public class TicketMock {
         TicketMessage tm = new TicketMessage();
         Ticket t1 = tb.setTitle("Ticket1")
                 .setOwner(customerUserRepository.findAll().get(0))
-                .assignEmployee(employeeUserRepository.findAll().get(0))
                 .build();
         Ticket t2 = tb.setTitle("Ticket2")
                 .setOwner(customerUserRepository.findAll().get(1))
-                .assignEmployee(employeeUserRepository.findAll().get(0))
-                .assignEmployee(managerUserRepository.findAll().get(0))
                 .build();
 
         ticketRepository.save(t1);
