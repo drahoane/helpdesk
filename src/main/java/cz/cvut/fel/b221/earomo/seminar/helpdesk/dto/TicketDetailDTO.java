@@ -9,7 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public record TicketDetailDTO(Long id, UserDTO owner, Set<UserDTO> assignedEmployees, TicketStatus status,
-                              TicketPriority priority, Department department, String title, Set<TicketMessageDTO> messages) {
+                              TicketPriority priority, Department department, String title,
+                              Set<TicketMessageDTO> messages) {
     public static TicketDetailDTO fromEntity(Ticket entity) {
         return new TicketDetailDTO(
                 entity.getTicketId(),

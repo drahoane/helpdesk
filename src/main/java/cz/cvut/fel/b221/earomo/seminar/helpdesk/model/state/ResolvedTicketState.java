@@ -14,17 +14,16 @@ public class ResolvedTicketState extends TicketState {
 
         TicketState newState;
 
-        if(newStatus == TicketStatus.RESOLVED) {
+        if (newStatus == TicketStatus.RESOLVED) {
             throw new IllegalStateChangeException("This state is already set.");
-        } else if(newStatus.equals(TicketStatus.AWAITING_RESPONSE)) {
-            if(!securityUser.isManager()) {
+        } else if (newStatus.equals(TicketStatus.AWAITING_RESPONSE)) {
+            if (!securityUser.isManager()) {
                 throw new IllegalStateChangeException(Ticket.class, getContext().getTicketId(), this.getClass(), AwaitingResponseTicketState.class);
             }
 
             newState = new AwaitingResponseTicketState();
-        }
-        else if(newStatus.equals(TicketStatus.OPEN)) {
-            if(!securityUser.isManager()) {
+        } else if (newStatus.equals(TicketStatus.OPEN)) {
+            if (!securityUser.isManager()) {
                 throw new IllegalStateChangeException(Ticket.class, getContext().getTicketId(), this.getClass(), OpenTicketState.class);
             }
 

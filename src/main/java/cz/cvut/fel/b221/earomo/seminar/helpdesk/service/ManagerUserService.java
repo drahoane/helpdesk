@@ -2,7 +2,8 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.ManagerUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.ManagerUserRepository;
 import lombok.AllArgsConstructor;
@@ -17,11 +18,9 @@ import java.util.Optional;
 public class ManagerUserService {
     private final ManagerUserRepository managerUserRepository;
     private final UserFactory userFactory;
-    private final TicketService ticketService;
-    private final EmployeeUserService employeeUserService;
 
     public ManagerUser create(String firstName, String lastName, String email, String password) {
-        ManagerUser managerUser = (ManagerUser)userFactory.createUser(firstName, lastName, email, password, UserType.MANAGER);
+        ManagerUser managerUser = (ManagerUser) userFactory.createUser(firstName, lastName, email, password, UserType.MANAGER);
         managerUserRepository.save(managerUser);
 
         return managerUser;

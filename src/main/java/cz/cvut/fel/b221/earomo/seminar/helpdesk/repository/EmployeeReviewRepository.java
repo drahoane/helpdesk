@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeReviewRepository extends JpaRepository<EmployeeReview, Long> {
-    public boolean existsByTicket(Ticket ticket);
-    public Optional<EmployeeReview> getByTicket(Ticket ticket);
+    boolean existsByTicket(Ticket ticket);
+
+    Optional<EmployeeReview> getByTicket(Ticket ticket);
 }

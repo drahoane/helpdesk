@@ -3,11 +3,9 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.model;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,11 +18,11 @@ public class SecurityUser implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<SimpleGrantedAuthority> roles = new HashSet<>();
-        if(user.getUserType() == UserType.CUSTOMER) {
+        if (user.getUserType() == UserType.CUSTOMER) {
             roles.add(new SimpleGrantedAuthority(Role.CUSTOMER.getName()));
-        } else if(user.getUserType() == UserType.EMPLOYEE) {
+        } else if (user.getUserType() == UserType.EMPLOYEE) {
             roles.add(new SimpleGrantedAuthority(Role.EMPLOYEE.getName()));
-        } else if(user.getUserType() == UserType.MANAGER) {
+        } else if (user.getUserType() == UserType.MANAGER) {
             roles.add(new SimpleGrantedAuthority(Role.MANAGER.getName()));
         } else {
             throw new RuntimeException("Cannot assign role. Unexpected UserType.");
@@ -72,8 +70,8 @@ public class SecurityUser implements UserDetails {
     }
 
     public boolean hasAnyRole(Role... roles) {
-        for(Role role : roles) {
-            if(hasRole(role))
+        for (Role role : roles) {
+            if (hasRole(role))
                 return true;
         }
 

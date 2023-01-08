@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class TicketFactoryTest {
+    Ticket ticket;
     @Autowired
     private TicketFactory ticketFactory;
     @Autowired
@@ -23,13 +24,10 @@ public class TicketFactoryTest {
     private TicketRepository ticketRepository;
     @Autowired
     private TicketMessageRepository ticketMessageRepository;
-
     @Autowired
     private UserMock userMock;
     @Autowired
     private TicketService ticketService;
-
-    Ticket ticket;
     @Autowired
     private EmployeeUserRepository employeeUserRepository;
     @Autowired

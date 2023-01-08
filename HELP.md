@@ -1,11 +1,14 @@
 # Read Me First
+
 The following was discovered as part of building this project:
 
-* The original package name 'cz.cvut.fel.b221.ear-omo.seminar.helpdesk' is invalid and this project uses 'cz.cvut.fel.b221.earomo.seminar.helpdesk' instead.
+* The original package name 'cz.cvut.fel.b221.ear-omo.seminar.helpdesk' is invalid and this project uses '
+  cz.cvut.fel.b221.earomo.seminar.helpdesk' instead.
 
 # Getting Started
 
 ### Reference Documentation
+
 For further reference, please consider the following sections:
 
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)

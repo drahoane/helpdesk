@@ -1,4 +1,5 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
+
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TimeRecordDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
@@ -9,12 +10,9 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TimeRecordService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;

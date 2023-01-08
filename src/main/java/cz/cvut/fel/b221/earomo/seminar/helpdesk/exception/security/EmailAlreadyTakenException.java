@@ -1,8 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.security;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.HelpdeskException;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 //@ResponseStatus(HttpStatus.CONFLICT)
 public class EmailAlreadyTakenException extends HelpdeskException {

@@ -4,11 +4,9 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermission
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TimeRecordRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.TimeRecordUpdateRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +27,6 @@ public class TimeRecordService {
 
     private final TimeRecordRepository timeRecordRepository;
     private final TicketRepository ticketRepository;
-    private final EmployeeUserRepository employeeUserRepository;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -58,13 +55,13 @@ public class TimeRecordService {
         assert securityUser != null;
         assert !securityUser.isCustomer();
 
-        if(timeRecordRepository.existsByEndIsNullAndEmployee((EmployeeUser) securityUser.getUser())) {
+        if (timeRecordRepository.existsByEndIsNullAndEmployee((EmployeeUser) securityUser.getUser())) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "One TimeRecord is already running.");
         }
 
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId));
 
-        if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
+        if (securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
             throw new InsufficientPermissionsException(TimeRecord.class, "create");
 
         TimeRecord timeRecord = new TimeRecord();
@@ -86,13 +83,13 @@ public class TimeRecordService {
         TimeRecord timeRecord = timeRecordRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(TimeRecord.class, id));
         Ticket ticket = timeRecord.getTicket();
 
-        if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
+        if (securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
             throw new InsufficientPermissionsException(TimeRecord.class, "update");
 
-        if(start != null)
+        if (start != null)
             timeRecord.setStart(start);
 
-        if(end != null)
+        if (end != null)
             timeRecord.setEnd(end);
 
         timeRecordRepository.save(timeRecord);

@@ -1,30 +1,18 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.mock;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.builder.TicketBuilder;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketMessage;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.ManagerUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 @Component
+@AllArgsConstructor
 public class TicketMock {
     private final CustomerUserRepository customerUserRepository;
-    private final EmployeeUserRepository employeeUserRepository;
-    private final ManagerUserRepository managerUserRepository;
     private final TicketRepository ticketRepository;
-
-    @Autowired
-    public TicketMock(CustomerUserRepository customerUserRepository, EmployeeUserRepository employeeUserRepository, ManagerUserRepository managerUserRepository, TicketRepository ticketRepository) {
-        this.customerUserRepository = customerUserRepository;
-        this.employeeUserRepository = employeeUserRepository;
-        this.managerUserRepository = managerUserRepository;
-        this.ticketRepository = ticketRepository;
-    }
 
     public void mock() {
         TicketBuilder tb = new TicketBuilder();

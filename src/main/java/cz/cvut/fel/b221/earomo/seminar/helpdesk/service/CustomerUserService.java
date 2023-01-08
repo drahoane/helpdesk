@@ -21,7 +21,7 @@ public class CustomerUserService {
 
 
     public CustomerUser create(String firstName, String lastName, String email, String password) {
-        CustomerUser customerUser = (CustomerUser)userFactory.createUser(firstName, lastName, email, password, UserType.CUSTOMER);
+        CustomerUser customerUser = (CustomerUser) userFactory.createUser(firstName, lastName, email, password, UserType.CUSTOMER);
         customerUserRepository.save(customerUser);
 
         return customerUser;

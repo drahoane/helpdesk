@@ -1,6 +1,9 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.builder;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
@@ -10,13 +13,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TicketBuilder {
-    private CustomerUser owner;
     private final Set<EmployeeUser> assignedEmployees;
+    private final Set<TimeRecord> timeRecords;
+    private CustomerUser owner;
     private TicketStatus status;
     private TicketPriority priority;
     private Department department;
     private String title;
-    private final Set<TimeRecord> timeRecords;
 
     public TicketBuilder() {
         this.status = TicketStatus.OPEN;
@@ -84,10 +87,10 @@ public class TicketBuilder {
     }
 
     public Ticket build() {
-        if(owner == null)
+        if (owner == null)
             throw new NullPointerException("Ticket owner can not be null.");
 
-        if(title == null)
+        if (title == null)
             throw new NullPointerException("Ticket title can not be null.");
 
         Ticket ticket = new Ticket();

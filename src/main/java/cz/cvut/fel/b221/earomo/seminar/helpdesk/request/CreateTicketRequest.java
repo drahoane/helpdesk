@@ -1,6 +1,5 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import lombok.AllArgsConstructor;

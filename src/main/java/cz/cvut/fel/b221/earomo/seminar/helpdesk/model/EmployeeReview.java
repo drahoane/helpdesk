@@ -24,7 +24,7 @@ public class EmployeeReview {
 
     @Enumerated(EnumType.STRING)
     private EmployeeReviewGrade grade;
-    
+
     private String textReview;
 
     @CreationTimestamp

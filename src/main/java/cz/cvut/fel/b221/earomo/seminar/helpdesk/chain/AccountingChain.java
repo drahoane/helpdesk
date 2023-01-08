@@ -7,7 +7,6 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TicketService;
 
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,8 +18,8 @@ public class AccountingChain extends TicketAssignmentChain {
 
     @Override
     public void assign(Ticket ticket) {
-        if(!ticket.getDepartment().equals(Department.ACCOUNTING)) {
-            if(getNext() == null)
+        if (!ticket.getDepartment().equals(Department.ACCOUNTING)) {
+            if (getNext() == null)
                 throw new ChainOfResponsibilityProcessingException("Next chain not found.");
 
             getNext().assign(ticket);

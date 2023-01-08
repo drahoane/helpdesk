@@ -62,7 +62,7 @@ public class Ticket {
     private TicketState state;
 
     public TicketState getState() {
-        if(state == null) {
+        if (state == null) {
             switch (status) {
                 case OPEN -> state = new OpenTicketState();
                 case AWAITING_RESPONSE -> state = new AwaitingResponseTicketState();
