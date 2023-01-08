@@ -9,6 +9,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeReview;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.EmployeeReviewGrade;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.EmployeeReviewRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeReviewService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
@@ -19,6 +20,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,21 +47,15 @@ public class EmployeeReviewController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
-    public EmployeeReviewListDTO createReview(@RequestBody @NotNull EmployeeReviewDTO employeeReviewDTO) {
+    public EmployeeReviewListDTO createReview(@RequestBody @Valid EmployeeReviewRequest request) {
         CustomerUser customer = (CustomerUser) SecurityUtils.getCurrentUser().getUser();
 
-        return EmployeeReviewListDTO.fromEntity(employeeReviewService.create(employeeReviewDTO.id(), employeeReviewDTO.grade(), employeeReviewDTO.textReview(), customer));
+        return EmployeeReviewListDTO.fromEntity(employeeReviewService.create(request.getTicketId(), request.getGrade(), request.getText(), customer));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     public void deleteReview(@PathVariable @NotNull Long id) {
-        userService.findByEmail(SecurityUtils.getCurrentUser().getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException(User.class, "email", SecurityUtils.getCurrentUser().getUsername()));
-
-        if(!employeeReviewService.getById(id).getCustomer().getEmail().equals(SecurityUtils.getCurrentUser().getUsername())) {
-            throw new InsufficientPermissionsException(EmployeeReview.class, id, "delete");
-        }
         employeeReviewService.delete(id);
     }
 }
