@@ -90,12 +90,12 @@ public class TicketController {
                 securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket)
         ) {
             // Ticket can be updated only by ticket owner, assigned employee and manager
-            logService.createLogByTemplate(LogType.UNAUTHORIZED, SecurityUtils.getCurrentUser().getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
+            logService.createLogByTemplate(LogType.UNAUTHORIZED, securityUser.getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
             throw new InsufficientPermissionsException(Ticket.class, request.getTicketId(), "update");
         }
 
         if (securityUser.isCustomer() && request.getPriority() != null) {
-            logService.createLogByTemplate(LogType.UNAUTHORIZED, SecurityUtils.getCurrentUser().getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
+            logService.createLogByTemplate(LogType.UNAUTHORIZED, securityUser.getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
             throw new InsufficientPermissionsException(Ticket.class, request.getTicketId(), "update priority");
         }
 
@@ -106,9 +106,12 @@ public class TicketController {
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @Operation(description = "Create ticket")
     public TicketDetailDTO createTicket(@RequestBody @Valid CreateTicketRequest request) {
-        CustomerUser customer = (CustomerUser) SecurityUtils.getCurrentUser().getUser();
+        SecurityUser securityUser = SecurityUtils.getCurrentUser();
+        CustomerUser customer = (CustomerUser) securityUser.getUser();
 
         Ticket ticket = ticketService.create(customer, request.getTitle(), request.getMessage(), request.getPriority(), request.getDepartment());
+
+        logService.createLogByTemplate(LogType.CREATE, securityUser.getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
 
         return TicketDetailDTO.fromEntity(ticket);
     }
@@ -123,10 +126,11 @@ public class TicketController {
                 securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket)
         ) {
             // Ticket can be closed only by ticket owner, assigned employee and manager
-            logService.createLogByTemplate(LogType.UNAUTHORIZED, SecurityUtils.getCurrentUser().getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
+            logService.createLogByTemplate(LogType.UNAUTHORIZED, securityUser.getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
             throw new InsufficientPermissionsException(Ticket.class, id, "close");
         } else {
             ticketService.update(ticket.getTicketId(), null, TicketStatus.RESOLVED);
+            logService.createLogByTemplate(LogType.UPDATE, securityUser.getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
         }
     }
 

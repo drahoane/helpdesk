@@ -1,5 +1,6 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.LogType;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class Log {
     private Long logId;
     private String resource;
     @ManyToOne
+    @JsonIgnore
     private User user;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
