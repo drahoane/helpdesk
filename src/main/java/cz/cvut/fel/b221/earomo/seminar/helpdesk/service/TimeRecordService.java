@@ -4,13 +4,12 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermission
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TimeRecordRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.TimeRecordUpdateRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,12 +23,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class TimeRecordService {
 
     private final TimeRecordRepository timeRecordRepository;
     private final TicketRepository ticketRepository;
-    private final EmployeeUserRepository employeeUserRepository;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -73,6 +72,7 @@ public class TimeRecordService {
         timeRecord.setEmployee((EmployeeUser) securityUser.getUser());
 
         timeRecordRepository.save(timeRecord);
+        log.info("Time record " + timeRecord.getTimeRecordId() + " has been created");
 
         return timeRecord;
     }
@@ -89,11 +89,15 @@ public class TimeRecordService {
         if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
             throw new InsufficientPermissionsException(TimeRecord.class, "update");
 
-        if(start != null)
+        if(start != null) {
             timeRecord.setStart(start);
+            log.info("Time record's start has been updated to " + timeRecord.getStart());
+        }
 
-        if(end != null)
+        if(end != null) {
             timeRecord.setEnd(end);
+            log.info("Time record's end has been updated to " + timeRecord.getEnd());
+        }
 
         timeRecordRepository.save(timeRecord);
     }

@@ -8,6 +8,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class EmployeeUserService {
     private final EmployeeUserRepository employeeUserRepository;
@@ -26,6 +28,8 @@ public class EmployeeUserService {
     public EmployeeUser create(String firstName, String lastName, String email, String password) {
         EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);
         employeeUserRepository.save(employeeUser);
+
+        log.info("Employee " + employeeUser.getUserId() + " with email " + employeeUser.getEmail() + " has been created");
 
         return employeeUser;
     }
@@ -40,12 +44,11 @@ public class EmployeeUserService {
         return employeeUserRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EmployeeUser.class, id));
     }
 
-    // TODO: change password
-
     @Transactional
     public void delete(@NotNull Long id) {
         EmployeeUser employeeUser = find(id);
         employeeUserRepository.delete(employeeUser);
+        log.info("Employee " + id + " has been deleted");
     }
 
     public Set<EmployeeUser> getAllUnassignedEmployees() {

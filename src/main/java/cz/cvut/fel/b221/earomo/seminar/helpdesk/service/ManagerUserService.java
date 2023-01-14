@@ -6,6 +6,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.ManagerUserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,16 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class ManagerUserService {
     private final ManagerUserRepository managerUserRepository;
     private final UserFactory userFactory;
-    private final TicketService ticketService;
-    private final EmployeeUserService employeeUserService;
 
     public ManagerUser create(String firstName, String lastName, String email, String password) {
         ManagerUser managerUser = (ManagerUser)userFactory.createUser(firstName, lastName, email, password, UserType.MANAGER);
         managerUserRepository.save(managerUser);
+
+        log.info("Manager " + managerUser.getUserId() + " with email " + managerUser.getEmail() + " has been created");
 
         return managerUser;
     }
@@ -32,12 +34,11 @@ public class ManagerUserService {
         return managerUserRepository.findById(id);
     }
 
-    // TODO: change password
-
     @Transactional
     public void delete(@NotNull Long id) {
         boolean exists = managerUserRepository.existsById(id);
         if (!exists) throw new ResourceNotFoundException(Ticket.class, id);
         managerUserRepository.deleteById(id);
+        log.info("Manager " + id + " has been deleted");
     }
 }

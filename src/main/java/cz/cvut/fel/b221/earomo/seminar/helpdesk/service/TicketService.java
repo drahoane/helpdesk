@@ -9,6 +9,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketMessageRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketFactory ticketFactory;
@@ -50,6 +52,8 @@ public class TicketService {
         ticket.getMessages().add(ticketMessage);
         ticketRepository.save(ticket);
 
+        log.info("Ticket " + ticket.getTicketId() + " with title " + ticket.getTitle() + " has been created");
+
         return ticket;
     }
 
@@ -71,12 +75,14 @@ public class TicketService {
     @Transactional
     public void update(@NotNull Long ticketId, TicketPriority ticketPriority, TicketStatus ticketStatus) {
         Ticket ticket = find(ticketId);
-        if(ticketPriority != null)
+        if(ticketPriority != null) {
             ticket.setPriority(ticketPriority);
-
+            log.info("Ticket's priority has been updated to " + ticket.getPriority());
+        }
         // No permissions verification needed, it is already being verified by state machine
         if(ticketStatus != null) {
             ticket.getState().changeState(ticketStatus);
+            log.info("Ticket's status has been updated to " + ticket.getStatus());
         }
 
         ticketRepository.save(ticket);
@@ -88,6 +94,7 @@ public class TicketService {
         if(!exists) throw new ResourceNotFoundException(Ticket.class, id);
 
         ticketRepository.deleteById(id);
+        log.info("Ticket " + id + " has been deleted");
     }
 
     @Transactional
@@ -97,6 +104,7 @@ public class TicketService {
         ticket.getAssignedEmployees().add(employee);
 
         ticketRepository.save(ticket);
+        log.info("Employee " + employee.getUserId() + " has been assigned to ticket " + ticket.getTicketId());
     }
 
     @Transactional
@@ -110,6 +118,7 @@ public class TicketService {
 
         ticket.setAssignedEmployees(newAssignedEmployees);
         ticketRepository.save(ticket);
+        log.info("Employee " + employeeId + " has been unassigned from ticket " + ticketId);
     }
 
     @Transactional
@@ -122,6 +131,7 @@ public class TicketService {
             for(EmployeeUser employee : employees) {
                 if(i == randElement) {
                     assignEmployee(ticket, employee);
+                    log.info("Employee " + employee.getUserId() + " has been assigned to ticket " + ticket.getTicketId() + " using random");
                     break;
                 }
 
@@ -143,10 +153,13 @@ public class TicketService {
         ticketMessageRepository.save(ticketMessage);
         ticketRepository.save(ticket);
 
+        log.info("Message " + ticketMessage.getTicketMessageId() + " has been added to ticket " + ticketID);
+
         return ticketMessage;
     }
 
     public void save(Ticket ticket) {
         ticketRepository.save(ticket);
+        log.info("Ticket " + ticket.getTicketId() + " has been saved");
     }
 }

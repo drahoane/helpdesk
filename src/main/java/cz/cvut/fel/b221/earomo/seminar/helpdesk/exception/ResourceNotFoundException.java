@@ -1,10 +1,11 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-//@ResponseStatus(HttpStatus.NOT_FOUND)
+@Slf4j
 public class ResourceNotFoundException extends HelpdeskException {
     public ResourceNotFoundException() {
         super();
@@ -12,13 +13,16 @@ public class ResourceNotFoundException extends HelpdeskException {
 
     public ResourceNotFoundException(@NotNull Class c, @NotNull Long id) {
         super("Resource " + c.getSimpleName() + " #" + id + " not found.");
+        log.info("ResourceNotFoundException has been thrown");
     }
 
     public ResourceNotFoundException(@NotNull Class c, @NotNull Long id, String scope) {
         super("Resource " + c.getSimpleName() + " #" + id + " not found. SCOPE: " + scope);
+        log.info("ResourceNotFoundException using scope has been thrown");
     }
 
     public ResourceNotFoundException(@NotNull Class c, @NotNull String identifiableBy, @NotNull String id) {
         super("Resource " + c.getSimpleName() + " with " + identifiableBy + " " + id + " not found.");
+        log.info("ResourceNotFoundException using identifiableBy has been thrown");
     }
 }
