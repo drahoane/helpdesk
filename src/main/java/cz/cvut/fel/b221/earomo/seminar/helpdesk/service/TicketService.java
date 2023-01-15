@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class TicketService implements Observer {
-public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketFactory ticketFactory;
     private final TicketMessageRepository ticketMessageRepository;
