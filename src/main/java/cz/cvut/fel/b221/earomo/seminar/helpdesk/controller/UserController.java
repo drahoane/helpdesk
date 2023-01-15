@@ -5,8 +5,6 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermission
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientRequestException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.security.EmailAlreadyTakenException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.LogType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
@@ -16,7 +14,6 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.LogService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -108,15 +105,6 @@ public class UserController {
         logService.createLogByTemplate(LogType.DELETE, SecurityUtils.getCurrentUser().getUser(), User.class, SecurityUtils.getCurrentUserIp());
         userService.delete(id);
     }
-
-
-
-
-
-    /*
-    public Set<EmployeeReviewListDTO> getAllReviews(@PathVariable @NotNull Long id) {
-        return employeeUserService.getAllReviews().stream().map(EmployeeReviewListDTO::fromEntity).collect(Collectors.toSet());
-    }*/
 }
 
 

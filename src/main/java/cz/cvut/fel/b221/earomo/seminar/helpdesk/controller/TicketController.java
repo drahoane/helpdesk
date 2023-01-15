@@ -3,7 +3,6 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketDetailDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TicketMessageDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TicketController {
     private final TicketService ticketService;
-    private final UserService userService;
     private final EmployeeUserService employeeUserService;
     private final LogService logService;
 

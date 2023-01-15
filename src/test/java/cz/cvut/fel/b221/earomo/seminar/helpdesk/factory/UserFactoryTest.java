@@ -7,7 +7,6 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,8 +31,6 @@ public class UserFactoryTest {
     private UserMock userMock;
     @Autowired
     private TicketMock ticketMock;
-    @Autowired
-    private UserService userService;
     private UserFactory userFactory;
 
     @BeforeEach
