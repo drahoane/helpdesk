@@ -1,15 +1,15 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.EmployeeReviewDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceAlreadyExistsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeReview;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.EmployeeReviewGrade;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeReviewRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,11 +26,6 @@ import java.util.stream.Collectors;
 public class EmployeeReviewService {
     private final EmployeeReviewRepository employeeReviewRepository;
     private final TicketRepository ticketRepository;
-    private final CustomerUserRepository customerUserRepository;
-
-    public boolean hasBeenReviewed(Ticket ticket) {
-        return employeeReviewRepository.existsByTicket(ticket);
-    }
 
     @Transactional(readOnly = true)
     public Set<EmployeeReview> getAll() {
@@ -54,9 +48,17 @@ public class EmployeeReviewService {
 
     @Transactional
     public EmployeeReview create(@NotNull Long ticketId, @NotNull EmployeeReviewGrade grade, @NotNull String text, @NotNull CustomerUser writer) {
+        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId));
+
+        if (!ticket.getStatus().equals(TicketStatus.RESOLVED))
+            throw new InsufficientPermissionsException(EmployeeReview.class, "create");
+
+        if (employeeReviewRepository.existsByTicket(ticket))
+            throw new ResourceAlreadyExistsException(EmployeeReview.class, "ticketId", ticket.getTicketId().toString());
+
         EmployeeReview employeeReview = new EmployeeReview();
         employeeReview.setCreatedAt(LocalDateTime.now());
-        employeeReview.setTicket(ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId)));
+        employeeReview.setTicket(ticket);
         employeeReview.setGrade(grade);
         employeeReview.setTextReview(text);
         employeeReview.setCustomer(writer);
@@ -70,7 +72,7 @@ public class EmployeeReviewService {
     @Transactional
     public void delete(@NotNull Long id) {
         boolean exists = employeeReviewRepository.existsById(id);
-        if(!exists) throw new ResourceNotFoundException(EmployeeReview.class, id);
+        if (!exists) throw new ResourceNotFoundException(EmployeeReview.class, id);
         employeeReviewRepository.deleteById(id);
         log.info("Employee review " + id + " has been deleted");
     }

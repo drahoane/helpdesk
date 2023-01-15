@@ -22,6 +22,8 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeRequests(auth -> auth
                         .antMatchers("/h2-console/**").permitAll()
+                        .antMatchers("/swagger-ui/**").permitAll()
+                        .antMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions().sameOrigin())
                 .userDetailsService(jpaUserDetailService)

@@ -2,7 +2,8 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.builder.TicketBuilder;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.chain.*;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.EmployeeUserService;
@@ -27,7 +28,7 @@ public class TicketFactory {
         ticketBuilder.setPriority(priority);
         ticketBuilder.setDepartment(department);
 
-        Ticket ticket =  ticketBuilder.build();
+        Ticket ticket = ticketBuilder.build();
 
         TicketAssignmentChain accounting = new AccountingChain(ticketService, employeeUserService);
         TicketAssignmentChain pr = new PrChain(ticketService, employeeUserService);

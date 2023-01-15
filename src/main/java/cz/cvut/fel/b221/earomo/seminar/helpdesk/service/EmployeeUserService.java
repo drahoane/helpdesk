@@ -2,7 +2,9 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.service;
 
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeReview;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
@@ -26,7 +28,7 @@ public class EmployeeUserService {
     private final TicketRepository ticketRepository;
 
     public EmployeeUser create(String firstName, String lastName, String email, String password) {
-        EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);
+        EmployeeUser employeeUser = (EmployeeUser) userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);
         employeeUserRepository.save(employeeUser);
 
         log.info("Employee " + employeeUser.getUserId() + " with email " + employeeUser.getEmail() + " has been created");

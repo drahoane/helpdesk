@@ -5,27 +5,24 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermission
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.TicketMock;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.mock.UserMock;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.*;
-import lombok.AllArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -45,10 +42,6 @@ public class TicketServiceTest {
     private EmployeeUserRepository employeeUserRepository;
     @Autowired
     private CustomerUserRepository customerUserRepository;
-    @Autowired
-    private TicketMessageRepository ticketMessageRepository;
-    @Autowired
-    private TimeRecordRepository timeRecordRepository;
     @Autowired
     private UserRepository userRepository;
 
@@ -94,9 +87,9 @@ public class TicketServiceTest {
         UserFactory userFactory = new UserFactory();
         employeeUserRepository.deleteAll();
         // Act
-        CustomerUser customerUser = (CustomerUser)userFactory.createUser("Jane", "Black", "jane@black.com", "non", UserType.CUSTOMER);
+        CustomerUser customerUser = (CustomerUser) userFactory.createUser("Jane", "Black", "jane@black.com", "non", UserType.CUSTOMER);
         customerUserRepository.save(customerUser);
-        EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser("John", "Smith", "john@smith.com", "none", UserType.EMPLOYEE, Department.SALES);
+        EmployeeUser employeeUser = (EmployeeUser) userFactory.createUser("John", "Smith", "john@smith.com", "none", UserType.EMPLOYEE, Department.SALES);
         employeeUserRepository.save(employeeUser);
         Ticket ticket = ticketService.create(customerUser, "Test title", "Test message", TicketPriority.HIGH, Department.SALES);
         ticketRepository.save(ticket);
@@ -110,9 +103,9 @@ public class TicketServiceTest {
         UserFactory userFactory = new UserFactory();
         employeeUserRepository.deleteAll();
         // Act
-        CustomerUser customerUser = (CustomerUser)userFactory.createUser("Jane", "Black", "jane@black.com", "non", UserType.CUSTOMER);
+        CustomerUser customerUser = (CustomerUser) userFactory.createUser("Jane", "Black", "jane@black.com", "non", UserType.CUSTOMER);
         customerUserRepository.save(customerUser);
-        EmployeeUser employeeUser = (EmployeeUser)userFactory.createUser("John", "Smith", "john@smith.com", "none", UserType.EMPLOYEE, Department.PR);
+        EmployeeUser employeeUser = (EmployeeUser) userFactory.createUser("John", "Smith", "john@smith.com", "none", UserType.EMPLOYEE, Department.PR);
         employeeUserRepository.save(employeeUser);
         Ticket ticket = ticketService.create(customerUser, "Test title", "Test message", TicketPriority.HIGH, Department.SALES);
         ticketRepository.save(ticket);

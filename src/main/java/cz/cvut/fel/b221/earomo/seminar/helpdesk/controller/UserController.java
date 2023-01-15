@@ -1,17 +1,16 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.*;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.HelpdeskException;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.UserDTO;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientRequestException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.security.EmailAlreadyTakenException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.InsufficientPermissionsException;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.factory.UserFactory;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.CreateUserRequest;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.UpdateUserRequest;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -29,22 +28,19 @@ import java.util.stream.Collectors;
 @RequestMapping("api/v1/user")
 @AllArgsConstructor
 public class UserController {
-    private final CustomerUserService customerUserService;
-    private final EmployeeUserService employeeUserService;
-    private final ManagerUserService managerUserService;
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final UserFactory userFactory;
 
     /**
      * Returns list of users, accepts optional parameter "type", that filters user based on their UserType.
+     *
      * @param userType
      * @return
      */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "List of all users")
     public Set<UserDTO> getAllUsers(@RequestParam(required = false, name = "type") UserType userType) {
-        if(userType == null)
+        if (userType == null)
             return userService.findAll().stream().map(UserDTO::fromEntity).collect(Collectors.toSet());
 
         return userService.findAllByUserType(userType).stream().map(UserDTO::fromEntity).collect(Collectors.toSet());
@@ -52,16 +48,17 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.email()")
+    @Operation(description = "User detail")
     public UserDTO getUser(@PathVariable @NotNull Long id) {
         return UserDTO.fromEntity(userService.find(id));
     }
 
     @PutMapping
-    //@PreAuthorize("hasRole('ROLE_MANAGER') OR principal.username == request.email")
+    @Operation(description = "User update")
     public void updateUser(@RequestBody @Valid UpdateUserRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if(request.getEmail().equals(auth.getName()) ||
+        if (request.getEmail().equals(auth.getName()) ||
                 auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"))) {
             userService.update(request.getFirstName(), request.getLastName(), request.getEmail());
         } else {
@@ -70,16 +67,17 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(description = "Create user")
     public UserDTO createUser(@RequestBody @Valid CreateUserRequest request) {
-        if(userService.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))) {
+        if (userService.findAll().stream().anyMatch(u -> u.getEmail().equals(request.getEmail()))) {
             throw new EmailAlreadyTakenException(User.class, request.getEmail());
         }
 
-        if(request.getUserType() == UserType.CUSTOMER)
+        if (request.getUserType() == UserType.CUSTOMER)
             return UserDTO.fromEntity(userService.createCustomer(request.getFirstName(), request.getLastName(),
-                request.getEmail(), request.getPassword(), request.getUserType()));
+                    request.getEmail(), request.getPassword(), request.getUserType()));
 
-        if(request.getDepartment() == null)
+        if (request.getDepartment() == null)
             throw new InsufficientRequestException(User.class, "create");
 
         return UserDTO.fromEntity(userService.create(request.getFirstName(), request.getLastName(),
@@ -88,6 +86,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "Delete user")
     public void deleteUser(@PathVariable @NotNull Long id) {
         userService.delete(id);
     }

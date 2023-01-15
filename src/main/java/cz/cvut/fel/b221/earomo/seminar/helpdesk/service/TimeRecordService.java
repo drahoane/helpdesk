@@ -57,13 +57,13 @@ public class TimeRecordService {
         assert securityUser != null;
         assert !securityUser.isCustomer();
 
-        if(timeRecordRepository.existsByEndIsNullAndEmployee((EmployeeUser) securityUser.getUser())) {
+        if (timeRecordRepository.existsByEndIsNullAndEmployee((EmployeeUser) securityUser.getUser())) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "One TimeRecord is already running.");
         }
 
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new ResourceNotFoundException(Ticket.class, ticketId));
 
-        if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
+        if (securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
             throw new InsufficientPermissionsException(TimeRecord.class, "create");
 
         TimeRecord timeRecord = new TimeRecord();
@@ -86,7 +86,7 @@ public class TimeRecordService {
         TimeRecord timeRecord = timeRecordRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(TimeRecord.class, id));
         Ticket ticket = timeRecord.getTicket();
 
-        if(securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
+        if (securityUser.isEmployee() && !securityUser.isAssignedToTicket(ticket))
             throw new InsufficientPermissionsException(TimeRecord.class, "update");
 
         if(start != null) {

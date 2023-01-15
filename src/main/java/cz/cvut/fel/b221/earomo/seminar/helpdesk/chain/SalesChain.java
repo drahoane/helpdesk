@@ -18,8 +18,8 @@ public class SalesChain extends TicketAssignmentChain {
 
     @Override
     public void assign(Ticket ticket) {
-        if(!ticket.getDepartment().equals(Department.SALES)) {
-            if(getNext() == null)
+        if (!ticket.getDepartment().equals(Department.SALES)) {
+            if (getNext() == null)
                 throw new ChainOfResponsibilityProcessingException("Next chain not found.");
 
             getNext().assign(ticket);

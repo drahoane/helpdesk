@@ -2,8 +2,6 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Slf4j
 public class ResourceNotFoundException extends HelpdeskException {

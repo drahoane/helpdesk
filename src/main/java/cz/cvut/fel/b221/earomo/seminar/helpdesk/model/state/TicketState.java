@@ -9,11 +9,11 @@ public abstract class TicketState {
 
     public abstract void changeState(TicketStatus status) throws IllegalStateChangeException;
 
-    public void setContext(Ticket ticket) {
-        this.context = ticket;
-    }
-
     public Ticket getContext() {
         return this.context;
+    }
+
+    public void setContext(Ticket ticket) {
+        this.context = ticket;
     }
 }

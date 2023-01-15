@@ -80,7 +80,7 @@ public class TicketService {
             log.info("Ticket's priority has been updated to " + ticket.getPriority());
         }
         // No permissions verification needed, it is already being verified by state machine
-        if(ticketStatus != null) {
+        if (ticketStatus != null) {
             ticket.getState().changeState(ticketStatus);
             log.info("Ticket's status has been updated to " + ticket.getStatus());
         }
@@ -91,7 +91,7 @@ public class TicketService {
     @Transactional
     public void delete(@NotNull Long id) {
         boolean exists = ticketRepository.existsById(id);
-        if(!exists) throw new ResourceNotFoundException(Ticket.class, id);
+        if (!exists) throw new ResourceNotFoundException(Ticket.class, id);
 
         ticketRepository.deleteById(id);
         log.info("Ticket " + id + " has been deleted");
@@ -99,7 +99,7 @@ public class TicketService {
 
     @Transactional
     public void assignEmployee(@NotNull Ticket ticket, @NotNull EmployeeUser employee) {
-        if(ticket.getAssignedEmployees().contains(employee))
+        if (ticket.getAssignedEmployees().contains(employee))
             throw new ResourceAlreadyExistsException(EmployeeUser.class, employee.getUserId(), "assigned employees");
         ticket.getAssignedEmployees().add(employee);
 
@@ -113,7 +113,7 @@ public class TicketService {
 
         Set<EmployeeUser> newAssignedEmployees = ticket.getAssignedEmployees().stream().filter(e -> !Objects.equals(e.getUserId(), employeeId)).collect(Collectors.toSet());
 
-        if(newAssignedEmployees.size() == ticket.getAssignedEmployees().size())
+        if (newAssignedEmployees.size() == ticket.getAssignedEmployees().size())
             throw new ResourceNotFoundException(EmployeeUser.class, employeeId, "assigned employees");
 
         ticket.setAssignedEmployees(newAssignedEmployees);
@@ -123,13 +123,13 @@ public class TicketService {
 
     @Transactional
     public void assignRandomEmployeeFromSet(@NotNull Ticket ticket, @NotNull Set<EmployeeUser> employees) {
-        if(!employees.isEmpty()) {
+        if (!employees.isEmpty()) {
             Random rand = new Random();
             int randElement = rand.nextInt(employees.size());
             int i = 0;
 
-            for(EmployeeUser employee : employees) {
-                if(i == randElement) {
+            for (EmployeeUser employee : employees) {
+                if (i == randElement) {
                     assignEmployee(ticket, employee);
                     log.info("Employee " + employee.getUserId() + " has been assigned to ticket " + ticket.getTicketId() + " using random");
                     break;

@@ -10,9 +10,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.CustomerUserRepositor
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeUserRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class TimeRecordServiceTest {
@@ -57,8 +55,8 @@ public class TimeRecordServiceTest {
     public void createThrowsExceptionForUnassignedEmployee() {
         Ticket ticket = ticketRepository.findAll().get(0);
 
-        assertThrows(InsufficientPermissionsException.class,() ->
-            timeRecordService.create(ticket.getTicketId())
+        assertThrows(InsufficientPermissionsException.class, () ->
+                timeRecordService.create(ticket.getTicketId())
         );
     }
 

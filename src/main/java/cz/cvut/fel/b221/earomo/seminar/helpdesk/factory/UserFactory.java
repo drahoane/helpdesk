@@ -1,6 +1,9 @@
 package cz.cvut.fel.b221.earomo.seminar.helpdesk.factory;
 
-import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.CustomerUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.EmployeeUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.ManagerUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import lombok.AllArgsConstructor;
@@ -13,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class UserFactory {
     public User createUser(String firstName, String lastName, String email, String encodedPassword, UserType userType) {
         User user;
-        switch(userType) {
+        switch (userType) {
             case CUSTOMER -> user = new CustomerUser();
             case EMPLOYEE -> user = new EmployeeUser();
             case MANAGER -> user = new ManagerUser();
