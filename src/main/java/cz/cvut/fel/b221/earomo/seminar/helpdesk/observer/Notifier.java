@@ -13,7 +13,7 @@ public abstract class Notifier {
     public void unregister(Observer observer) {
         observers.remove(observer);
     }
-    public void notifyObservers(Object obj) {
+    protected void notifyObservers(Object obj) {
         for(Observer o : observers) {
             o.update(obj);
         }

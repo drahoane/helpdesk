@@ -3,6 +3,7 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Log;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.LogType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.LogService;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -21,17 +22,16 @@ public class LogController {
     private  final LogService logService;
 
 
-    @PostFilter("hasRole('ROLE_MANAGER') OR principal.username == filterObject.user.email")
     @GetMapping
-    @Operation(description = "List of all logs of certain type (MANAGER) | List of all owned logs of certain type (CUSTOMER, EMPLOYEE)")
-    public Set<Log> getAllLogsByType(@NotNull @RequestBody LogType type) {
-        return logService.findAllByType(type);
+    @Operation(description = "List of all logs owned by logged in user")
+    public Set<Log> getAllLogs() {
+        return logService.findAllByUser(SecurityUtils.getCurrentUser().getUser().getUserId());
     }
 
-    @GetMapping("/{id}")
-    @PostAuthorize("hasRole('ROLE_MANAGER') OR principal.username == returnObject.user.email")
-    @Operation(description = "Log")
-    public Log getLog(@NotNull @PathVariable Long id) {
-        return logService.find(id);
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Operation(description = "List of all logs owned by specified user")
+    public Set<Log> getAllUserLogs(@NotNull @PathVariable Long userId) {
+        return logService.findAllByUser(userId);
     }
 }

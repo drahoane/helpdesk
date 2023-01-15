@@ -55,14 +55,14 @@ public class TimeRecordController {
         return timeRecordService.findByTicket(ticketId).stream().map(TimeRecordDTO::fromEntity).collect(Collectors.toSet());
     }
 
-    @GetMapping("/{ticketId}/start")
+    @PostMapping("/{ticketId}")
     @Operation(description = "Start new time record")
     public TimeRecordDTO startTimeRecord(@PathVariable @NotNull Long ticketId) {
         logService.createLogByTemplate(LogType.UPDATE, SecurityUtils.getCurrentUser().getUser(), TimeRecord.class, SecurityUtils.getCurrentUserIp());
         return TimeRecordDTO.fromEntity(timeRecordService.create(ticketId));
     }
 
-    @GetMapping("/stop")
+    @PatchMapping
     @Operation(description = "Stop running time record")
     public TimeRecordDTO stopTimeRecord() {
         SecurityUser securityUser = SecurityUtils.getCurrentUser();

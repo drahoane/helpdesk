@@ -4,13 +4,18 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundExcept
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Log;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Notification;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TicketMessage;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.User;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.observer.Observer;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.observer.TicketMessageNotifier;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.NotificationRepository;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,8 +23,17 @@ import java.util.Set;
 @AllArgsConstructor
 public class NotificationService implements Observer {
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
+    private final TicketMessageNotifier ticketMessageNotifier;
+
+
+    @PostConstruct
+    private void registerAsObserver() {
+        ticketMessageNotifier.register(this);
+    }
 
     @Override
+    @Transactional
     public void update(Object obj) {
         if(!(obj instanceof TicketMessage))
             throw new IllegalArgumentException();
@@ -35,10 +49,13 @@ public class NotificationService implements Observer {
         }
     }
 
-    public Set<Notification> findAll() {
-        return new HashSet<>(notificationRepository.findAll());
+    @Transactional(readOnly = true)
+    public Set<Notification> findAllByUser(@NotNull Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(User.class, userId));
+        return new HashSet<>(notificationRepository.findAllByUser(user));
     }
 
+    @Transactional(readOnly = true)
     public Notification find(@NotNull Long id) {
         return notificationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Notification.class, id));
     }

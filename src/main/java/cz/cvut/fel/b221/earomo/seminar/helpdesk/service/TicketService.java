@@ -147,6 +147,8 @@ public class TicketService implements Observer {
         ticketMessageRepository.save(ticketMessage);
         ticketRepository.save(ticket);
 
+        ticketMessageNotifier.newTicketMessage(ticketMessage);
+
         return ticketMessage;
     }
 
@@ -155,6 +157,7 @@ public class TicketService implements Observer {
     }
 
     @Override
+    @Transactional
     public void update(Object obj) {
         if(!(obj instanceof TicketMessage))
             throw new IllegalArgumentException();

@@ -116,7 +116,7 @@ public class TicketController {
         return TicketDetailDTO.fromEntity(ticket);
     }
 
-    @GetMapping("/{id}/close")
+    @PatchMapping("/{id}")
     @Operation(description = "Close ticket")
     public void closeTicket(@PathVariable Long id) {
         Ticket ticket = ticketService.find(id);
@@ -167,21 +167,7 @@ public class TicketController {
         return ticket.getMessages().stream().map(TicketMessageDTO::fromEntity).collect(Collectors.toSet());
     }
 
-    @GetMapping("/{ticketId}/message/{msgId}")
-    @PostAuthorize("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER') OR principal.username == returnObject.sender().email()")
-    @Operation(description = "Ticket message detail")
-    public TicketMessageDTO getTicketMessage(@PathVariable @NotNull Long ticketId, @PathVariable @NotNull Long msgId) {
-        Ticket ticket = ticketService.find(ticketId);
-        if (SecurityUtils.getCurrentUser().getUser().getUserType().equals(UserType.EMPLOYEE) && ticket.getAssignedEmployees().stream().noneMatch(e -> e.getUserId().equals(SecurityUtils.getCurrentUser().getUser().getUserId()))) {
-            logService.createLogByTemplate(LogType.UNAUTHORIZED, SecurityUtils.getCurrentUser().getUser(), Ticket.class, SecurityUtils.getCurrentUserIp());
-            throw new InsufficientPermissionsException(TicketMessage.class, msgId, "get");
-        }
-        return TicketMessageDTO.fromEntity(
-                ticket.getMessages().stream().filter(m -> m.getTicketMessageId().equals(msgId)).findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException(TicketMessage.class, msgId)));
-    }
-
-    @PostMapping("/{id}/message/add")
+    @PostMapping("/{id}/message")
     @Operation(description = "Send ticket message")
     public TicketMessageDTO addTicketMessage(@PathVariable @NotNull Long id,
                                              @RequestBody @NotNull String message) {
