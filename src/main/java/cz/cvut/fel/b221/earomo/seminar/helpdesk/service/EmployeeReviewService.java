@@ -11,6 +11,7 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.EmployeeReviewRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class EmployeeReviewService {
     private final EmployeeReviewRepository employeeReviewRepository;
@@ -62,6 +64,8 @@ public class EmployeeReviewService {
         employeeReview.setCustomer(writer);
 
         employeeReviewRepository.save(employeeReview);
+        log.info("Employee review " + employeeReview.getEmployeeReviewId() + " for ticket " + employeeReview.getTicket() + " has been created");
+
         return employeeReview;
     }
 
@@ -70,5 +74,6 @@ public class EmployeeReviewService {
         boolean exists = employeeReviewRepository.existsById(id);
         if (!exists) throw new ResourceNotFoundException(EmployeeReview.class, id);
         employeeReviewRepository.deleteById(id);
+        log.info("Employee review " + id + " has been deleted");
     }
 }
