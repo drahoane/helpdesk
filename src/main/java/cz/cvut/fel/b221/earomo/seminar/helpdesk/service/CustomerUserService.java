@@ -22,6 +22,7 @@ public class CustomerUserService {
     private final UserFactory userFactory;
 
 
+    @Transactional
     public CustomerUser create(String firstName, String lastName, String email, String password) {
         CustomerUser customerUser = (CustomerUser) userFactory.createUser(firstName, lastName, email, password, UserType.CUSTOMER);
         customerUserRepository.save(customerUser);

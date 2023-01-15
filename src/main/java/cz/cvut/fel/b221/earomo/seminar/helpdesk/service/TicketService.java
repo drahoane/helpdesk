@@ -7,14 +7,19 @@ import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.*;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Department;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketPriority;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.TicketStatus;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.UserType;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.observer.Observer;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.observer.TicketMessageNotifier;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketMessageRepository;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.repository.TicketRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -23,18 +28,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 @Slf4j
+public class TicketService implements Observer {
 public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketFactory ticketFactory;
     private final TicketMessageRepository ticketMessageRepository;
+    private final TicketMessageNotifier ticketMessageNotifier;
 
-    @Autowired
-    public TicketService(TicketRepository ticketRepository, TicketFactory ticketFactory,
-                         TicketMessageRepository ticketMessageRepository) {
-        this.ticketRepository = ticketRepository;
-        this.ticketFactory = ticketFactory;
-        this.ticketMessageRepository = ticketMessageRepository;
+    @PostConstruct
+    private void registerAsObserver() {
+        ticketMessageNotifier.register(this);
     }
 
     @Transactional
@@ -153,6 +158,8 @@ public class TicketService {
         ticketMessageRepository.save(ticketMessage);
         ticketRepository.save(ticket);
 
+        ticketMessageNotifier.newTicketMessage(ticketMessage);
+
         log.info("Message " + ticketMessage.getTicketMessageId() + " has been added to ticket " + ticketID);
 
         return ticketMessage;
@@ -161,5 +168,21 @@ public class TicketService {
     public void save(Ticket ticket) {
         ticketRepository.save(ticket);
         log.info("Ticket " + ticket.getTicketId() + " has been saved");
+    }
+
+    @Override
+    @Transactional
+    public void update(Object obj) {
+        if(!(obj instanceof TicketMessage))
+            throw new IllegalArgumentException();
+
+        TicketMessage ticketMessage = (TicketMessage) obj;
+        Ticket ticket = ticketMessage.getTicket();
+        if(ticketMessage.getSender().getUserType().equals(UserType.CUSTOMER))
+            ticket.getState().changeState(TicketStatus.OPEN);
+        else
+            ticket.getState().changeState(TicketStatus.AWAITING_RESPONSE);
+
+        ticketRepository.save(ticket);
     }
 }

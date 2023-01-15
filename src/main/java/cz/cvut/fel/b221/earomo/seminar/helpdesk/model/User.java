@@ -33,9 +33,15 @@ public abstract class User {
     @Transient
     private UserType userType;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @Lazy
     private Set<TicketMessage> ticketMessages;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<Log> logs;
+
+    @OneToMany(mappedBy = "user", cascade =  CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<Notification> notifications;
 
     public abstract UserType getUserType();
 }

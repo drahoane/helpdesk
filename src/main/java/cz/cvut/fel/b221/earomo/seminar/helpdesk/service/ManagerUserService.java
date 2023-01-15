@@ -21,6 +21,7 @@ public class ManagerUserService {
     private final ManagerUserRepository managerUserRepository;
     private final UserFactory userFactory;
 
+    @Transactional
     public ManagerUser create(String firstName, String lastName, String email, String password) {
         ManagerUser managerUser = (ManagerUser) userFactory.createUser(firstName, lastName, email, password, UserType.MANAGER);
         managerUserRepository.save(managerUser);

@@ -27,6 +27,8 @@ public class EmployeeUserService {
     private final UserFactory userFactory;
     private final TicketRepository ticketRepository;
 
+
+    @Transactional
     public EmployeeUser create(String firstName, String lastName, String email, String password) {
         EmployeeUser employeeUser = (EmployeeUser) userFactory.createUser(firstName, lastName, email, password, UserType.EMPLOYEE);
         employeeUserRepository.save(employeeUser);
@@ -53,6 +55,7 @@ public class EmployeeUserService {
         log.info("Employee " + id + " has been deleted");
     }
 
+    @Transactional(readOnly = true)
     public Set<EmployeeUser> getAllUnassignedEmployees() {
         Set<EmployeeUser> unassignedEmployees = new HashSet<>(employeeUserRepository.findAll());
         Set<EmployeeUser> assignedEmployees = new HashSet<>();
@@ -68,6 +71,7 @@ public class EmployeeUserService {
         return unassignedEmployees;
     }
 
+    @Transactional(readOnly = true)
     public Set<EmployeeReview> getAllReviews() {
         return ticketRepository.findAll().stream().map(Ticket::getReview).collect(Collectors.toSet());
     }

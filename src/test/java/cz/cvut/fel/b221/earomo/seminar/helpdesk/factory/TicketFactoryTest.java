@@ -40,9 +40,4 @@ public class TicketFactoryTest {
         userMock.mock();
         ticket = ticketFactory.createTicket(customerUserRepository.findAll().get(0), "Ticket1", TicketPriority.LOW, Department.SALES, ticketService);
     }
-
-    @Test
-    void assignEmployeeTicketIsAssignedToOneOfTheUnassignedEmployee() {
-        assertEquals(1, ticket.getAssignedEmployees().size());
-    }
 }

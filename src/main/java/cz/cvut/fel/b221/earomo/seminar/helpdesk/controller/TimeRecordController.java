@@ -3,9 +3,12 @@ package cz.cvut.fel.b221.earomo.seminar.helpdesk.controller;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.dto.TimeRecordDTO;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.exception.ResourceNotFoundException;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.SecurityUser;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.Ticket;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.TimeRecord;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.LogType;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.model.enumeration.Role;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.request.TimeRecordUpdateRequest;
+import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.LogService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.service.TimeRecordService;
 import cz.cvut.fel.b221.earomo.seminar.helpdesk.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 public class TimeRecordController {
 
     private final TimeRecordService timeRecordService;
+    private final LogService logService;
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MANAGER')")
@@ -51,19 +55,23 @@ public class TimeRecordController {
         return timeRecordService.findByTicket(ticketId).stream().map(TimeRecordDTO::fromEntity).collect(Collectors.toSet());
     }
 
-    @GetMapping("/{ticketId}/start")
+    @PostMapping("/{ticketId}")
     @Operation(description = "Start new time record")
     public TimeRecordDTO startTimeRecord(@PathVariable @NotNull Long ticketId) {
+        logService.createLogByTemplate(LogType.UPDATE, SecurityUtils.getCurrentUser().getUser(), TimeRecord.class, SecurityUtils.getCurrentUserIp());
         return TimeRecordDTO.fromEntity(timeRecordService.create(ticketId));
     }
 
-    @GetMapping("/stop")
+    @PatchMapping
     @Operation(description = "Stop running time record")
     public TimeRecordDTO stopTimeRecord() {
-        TimeRecord timeRecord = timeRecordService.getRunning(SecurityUtils.getCurrentUser().getUser().getUserId())
+        SecurityUser securityUser = SecurityUtils.getCurrentUser();
+        TimeRecord timeRecord = timeRecordService.getRunning(securityUser.getUser().getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(TimeRecord.class, "end", "null"));
 
         timeRecordService.update(timeRecord.getTimeRecordId(), null, LocalDateTime.now());
+        logService.createLogByTemplate(LogType.UPDATE, securityUser.getUser(), TimeRecord.class, SecurityUtils.getCurrentUserIp());
+
 
         return TimeRecordDTO.fromEntity(timeRecord);
     }
@@ -72,5 +80,6 @@ public class TimeRecordController {
     @Operation(description = "Update time record")
     public void updateTimeRecord(@RequestBody @Valid TimeRecordUpdateRequest request) {
         timeRecordService.update(request.getTimeRecordId(), request.getStart(), request.getEnd());
+        logService.createLogByTemplate(LogType.UPDATE, SecurityUtils.getCurrentUser().getUser(), TimeRecord.class, SecurityUtils.getCurrentUserIp());
     }
 }
