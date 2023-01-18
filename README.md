@@ -82,6 +82,15 @@ Aplikace sestává z REST controllerů, které volají servisní vrstvu, jež d�
 - employee: username - john@smith.com, heslo - none 
 - customer: username - alan@black.com, heslo - none 
 
+## Design patterny
+- singleton
+- state
+- factory
+- builder
+- chain of responsibility
+- observer
+- prototype
+
 ## Získané zkušenosti
 Práce na semestrálním projektu byla naší první zkušeností s takto komplexní aplikací a celkově Springem. Byli jsme tak na začátku zděšeni množstvím požadavků na práci, nicméně po sestavení základní kostry aplikace a ujasnění si co musíme udělat, byla práce na rozdíl od očekávání vcelku intuitivní a začala jsem si tak její rozsáhlosti za cenu jasného rozlišení odpovědností a probublávání struktur cenit.
 
