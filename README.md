@@ -76,6 +76,12 @@ Aplikace sestává z REST controllerů, které volají servisní vrstvu, jež d�
 4. Ve stejné složce jako je zmiňovaný soubor zadejte do terminálu příkaz: `java -jar helpdesk-0.0.1-SNAPSHOT.jar`
 3. Po spuštění aplikace můžete použít endpointy nacházející se na adrese http://localhost:8080/swagger-ui/index.html
 
+### Přihlašovací údaje
+(s basic authentication)
+- manager: username - peter@tee.com, heslo - none
+- employee: username - john@smith.com, heslo - none 
+- customer: username - alan@black.com, heslo - none 
+
 ## Získané zkušenosti
 Práce na semestrálním projektu byla naší první zkušeností s takto komplexní aplikací a celkově Springem. Byli jsme tak na začátku zděšeni množstvím požadavků na práci, nicméně po sestavení základní kostry aplikace a ujasnění si co musíme udělat, byla práce na rozdíl od očekávání vcelku intuitivní a začala jsem si tak její rozsáhlosti za cenu jasného rozlišení odpovědností a probublávání struktur cenit.
 
